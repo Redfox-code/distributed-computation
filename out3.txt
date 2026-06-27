@@ -1,0 +1,29 @@
+26/06/27 07:41:54 INFO SparkContext: Running Spark version 3.5.8
+26/06/27 07:41:54 INFO SparkContext: OS info Linux, 3.10.0-1160.el7.x86_64, amd64
+26/06/27 07:41:54 INFO SparkContext: Java version 1.8.0_131
+26/06/27 07:41:54 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+26/06/27 07:41:55 INFO ResourceUtils: ==============================================================
+26/06/27 07:41:55 INFO ResourceUtils: No custom resources configured for spark.driver.
+26/06/27 07:41:55 INFO ResourceUtils: ==============================================================
+26/06/27 07:41:55 INFO SparkContext: Submitted application: Task3-Optimized
+26/06/27 07:41:55 INFO ResourceProfile: Default ResourceProfile created, executor resources: Map(cores -> name: cores, amount: 1, script: , vendor: , memory -> name: memory, amount: 512, script: , vendor: , offHeap -> name: offHeap, amount: 0, script: , vendor: ), task resources: Map(cpus -> name: cpus, amount: 1.0)
+26/06/27 07:41:55 INFO ResourceProfile: Limiting resource is cpus at 1 tasks per executor
+26/06/27 07:41:55 INFO ResourceProfileManager: Added ResourceProfile id: 0
+26/06/27 07:41:55 INFO SecurityManager: Changing view acls to: root
+26/06/27 07:41:55 INFO SecurityManager: Changing modify acls to: root
+26/06/27 07:41:55 INFO SecurityManager: Changing view acls groups to: 
+26/06/27 07:41:55 INFO SecurityManager: Changing modify acls groups to: 
+26/06/27 07:41:55 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: root; groups with view permissions: EMPTY; users with modify permissions: root; groups with modify permissions: EMPTY
+26/06/27 07:41:57 INFO Utils: Successfully started service 'sparkDriver' on port 38202.
+26/06/27 07:41:57 INFO SparkEnv: Registering MapOutputTracker
+26/06/27 07:41:57 INFO SparkEnv: Registering BlockManagerMaster
+26/06/27 07:41:57 INFO BlockManagerMasterEndpoint: Using org.apache.spark.storage.DefaultTopologyMapper for getting topology information
+26/06/27 07:41:57 INFO BlockManagerMasterEndpoint: BlockManagerMasterEndpoint up
+26/06/27 07:41:57 INFO SparkEnv: Registering BlockManagerMasterHeartbeat
+26/06/27 07:41:57 INFO DiskBlockManager: Created local directory at /tmp/spark-tmp/blockmgr-70ed87a4-7820-4a36-be6e-94d4cb86a10e
+26/06/27 07:41:57 INFO MemoryStore: MemoryStore started with capacity 117.0 MiB
+26/06/27 07:41:58 INFO SparkEnv: Registering OutputCommitCoordinator
+26/06/27 07:42:00 INFO JettyUtils: Start Jetty 0.0.0.0:4040 for SparkUI
+26/06/27 07:42:02 INFO Utils: Successfully started service 'SparkUI' on port 4040.
+26/06/27 07:42:03 INFO StandaloneAppClient$ClientEndpoint: Connecting to master spark://Master001:7077...
+26/06/27 07:42:04 INFO TransportClientFactory: Successfully created connection to Master001/192.168.149.128:7077 after 308 ms (0 ms spent in bootstraps)

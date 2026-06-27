@@ -119,7 +119,7 @@ if __name__ == '__main__':
     logger.info("Step 4: MLlib分布式训练")
 
     train_spark = spark.createDataFrame(smote_pdf.astype(float)).cache()  # ★ 缓存
-    test_spark  = spark.createDataFrame(test_pdf[features].astype(float))
+    test_spark  = spark.createDataFrame(test_pdf[features + [target]].astype(float))
     test_spark  = test_spark.withColumn('log_target', spark_log1p(col(target)))
 
     assembler = VectorAssembler(inputCols=features, outputCol='features')
