@@ -1,0 +1,66 @@
+26/06/18 10:07:28 INFO SparkContext: Running Spark version 3.5.8
+26/06/18 10:07:28 INFO SparkContext: OS info Linux, 3.10.0-1160.el7.x86_64, amd64
+26/06/18 10:07:28 INFO SparkContext: Java version 1.8.0_131
+26/06/18 10:07:28 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+26/06/18 10:07:29 INFO ResourceUtils: ==============================================================
+26/06/18 10:07:29 INFO ResourceUtils: No custom resources configured for spark.driver.
+26/06/18 10:07:29 INFO ResourceUtils: ==============================================================
+26/06/18 10:07:29 INFO SparkContext: Submitted application: Task3-DeviceRegression
+26/06/18 10:07:29 INFO ResourceProfile: Default ResourceProfile created, executor resources: Map(cores -> name: cores, amount: 4, script: , vendor: , memory -> name: memory, amount: 768, script: , vendor: , offHeap -> name: offHeap, amount: 0, script: , vendor: ), task resources: Map(cpus -> name: cpus, amount: 1.0)
+26/06/18 10:07:29 INFO ResourceProfile: Limiting resource is cpus at 4 tasks per executor
+26/06/18 10:07:29 INFO ResourceProfileManager: Added ResourceProfile id: 0
+26/06/18 10:07:30 INFO SecurityManager: Changing view acls to: root
+26/06/18 10:07:30 INFO SecurityManager: Changing modify acls to: root
+26/06/18 10:07:30 INFO SecurityManager: Changing view acls groups to: 
+26/06/18 10:07:30 INFO SecurityManager: Changing modify acls groups to: 
+26/06/18 10:07:30 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: root; groups with view permissions: EMPTY; users with modify permissions: root; groups with modify permissions: EMPTY
+26/06/18 10:07:31 INFO Utils: Successfully started service 'sparkDriver' on port 43644.
+26/06/18 10:07:31 INFO SparkEnv: Registering MapOutputTracker
+26/06/18 10:07:31 INFO SparkEnv: Registering BlockManagerMaster
+26/06/18 10:07:32 INFO BlockManagerMasterEndpoint: Using org.apache.spark.storage.DefaultTopologyMapper for getting topology information
+26/06/18 10:07:32 INFO BlockManagerMasterEndpoint: BlockManagerMasterEndpoint up
+26/06/18 10:07:32 INFO SparkEnv: Registering BlockManagerMasterHeartbeat
+26/06/18 10:07:32 INFO DiskBlockManager: Created local directory at /tmp/spark-tmp/blockmgr-30b423e5-b3e8-4471-99aa-51864f0c5f5d
+26/06/18 10:07:32 INFO MemoryStore: MemoryStore started with capacity 413.9 MiB
+26/06/18 10:07:32 INFO SparkEnv: Registering OutputCommitCoordinator
+26/06/18 10:07:33 INFO JettyUtils: Start Jetty 0.0.0.0:4040 for SparkUI
+26/06/18 10:07:34 INFO Utils: Successfully started service 'SparkUI' on port 4040.
+26/06/18 10:07:35 INFO StandaloneAppClient$ClientEndpoint: Connecting to master spark://Master001:7077...
+26/06/18 10:07:35 INFO TransportClientFactory: Successfully created connection to Master001/192.168.149.128:7077 after 175 ms (0 ms spent in bootstraps)
+26/06/18 10:07:35 INFO StandaloneSchedulerBackend: Connected to Spark cluster with app ID app-20260618100735-0002
+26/06/18 10:07:35 INFO StandaloneAppClient$ClientEndpoint: Executor added: app-20260618100735-0002/0 on worker-20260618095137-192.168.149.230-7078 (192.168.149.230:7078) with 4 core(s)
+26/06/18 10:07:35 INFO StandaloneSchedulerBackend: Granted executor ID app-20260618100735-0002/0 on hostPort 192.168.149.230:7078 with 4 core(s), 768.0 MiB RAM
+26/06/18 10:07:35 INFO StandaloneAppClient$ClientEndpoint: Executor added: app-20260618100735-0002/1 on worker-20260618095137-192.168.149.228-7078 (192.168.149.228:7078) with 4 core(s)
+26/06/18 10:07:35 INFO StandaloneSchedulerBackend: Granted executor ID app-20260618100735-0002/1 on hostPort 192.168.149.228:7078 with 4 core(s), 768.0 MiB RAM
+26/06/18 10:07:35 INFO StandaloneAppClient$ClientEndpoint: Executor added: app-20260618100735-0002/2 on worker-20260618095253-192.168.149.229-7078 (192.168.149.229:7078) with 4 core(s)
+26/06/18 10:07:35 INFO StandaloneSchedulerBackend: Granted executor ID app-20260618100735-0002/2 on hostPort 192.168.149.229:7078 with 4 core(s), 768.0 MiB RAM
+26/06/18 10:07:35 INFO StandaloneAppClient$ClientEndpoint: Executor updated: app-20260618100735-0002/2 is now RUNNING
+26/06/18 10:07:35 INFO StandaloneAppClient$ClientEndpoint: Executor updated: app-20260618100735-0002/0 is now RUNNING
+26/06/18 10:07:35 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 43083.
+26/06/18 10:07:35 INFO NettyBlockTransferService: Server created on Master001:43083
+26/06/18 10:07:35 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy
+26/06/18 10:07:35 INFO BlockManager: external shuffle service port = 7337
+26/06/18 10:07:36 INFO StandaloneAppClient$ClientEndpoint: Executor updated: app-20260618100735-0002/1 is now RUNNING
+26/06/18 10:07:36 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(driver, Master001, 43083, None)
+26/06/18 10:07:36 INFO BlockManagerMasterEndpoint: Registering block manager Master001:43083 with 413.9 MiB RAM, BlockManagerId(driver, Master001, 43083, None)
+26/06/18 10:07:36 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(driver, Master001, 43083, None)
+26/06/18 10:07:36 INFO BlockManager: Initialized BlockManager: BlockManagerId(driver, Master001, 43083, None)
+26/06/18 10:07:37 INFO StandaloneSchedulerBackend: SchedulerBackend is ready for scheduling beginning after reached minRegisteredResourcesRatio: 0.0
+2026-06-18 10:07:38,324 - INFO - ============================================================
+2026-06-18 10:07:38,325 - INFO - 设备级故障周期预测 (Spark MLlib 分布式)
+2026-06-18 10:07:38,325 - INFO - ============================================================
+2026-06-18 10:07:38,325 - INFO - Step 1: 设备级特征工程
+26/06/18 10:07:42 INFO StandaloneSchedulerBackend$StandaloneDriverEndpoint: Registered executor NettyRpcEndpointRef(spark-client://Executor) (192.168.149.230:50740) with ID 0,  ResourceProfileId 0
+26/06/18 10:07:42 INFO BlockManagerMasterEndpoint: Registering block manager 192.168.149.230:33127 with 265.5 MiB RAM, BlockManagerId(0, 192.168.149.230, 33127, None)
+26/06/18 10:07:42 INFO StandaloneSchedulerBackend$StandaloneDriverEndpoint: Registered executor NettyRpcEndpointRef(spark-client://Executor) (192.168.149.228:58494) with ID 1,  ResourceProfileId 0
+26/06/18 10:07:42 INFO StandaloneSchedulerBackend$StandaloneDriverEndpoint: Registered executor NettyRpcEndpointRef(spark-client://Executor) (192.168.149.229:54138) with ID 2,  ResourceProfileId 0
+26/06/18 10:07:42 INFO BlockManagerMasterEndpoint: Registering block manager 192.168.149.228:38866 with 265.5 MiB RAM, BlockManagerId(1, 192.168.149.228, 38866, None)
+26/06/18 10:07:42 INFO BlockManagerMasterEndpoint: Registering block manager 192.168.149.229:35202 with 265.5 MiB RAM, BlockManagerId(2, 192.168.149.229, 35202, None)
+2026-06-18 10:07:48,985 - INFO - 设备数: 1523, MTBF: 1-90天
+2026-06-18 10:07:48,985 - INFO - Step 2: 分层划分
+2026-06-18 10:07:50,414 - INFO - 训练: 1218 | 测试: 305
+2026-06-18 10:07:50,414 - INFO - Step 3: SMOTE均衡
+2026-06-18 10:07:50,891 - INFO - SMOTE: 1218 -> 1350
+2026-06-18 10:07:50,891 - INFO - Step 4: Spark MLlib分布式训练
+26/06/18 10:07:51 INFO SharedState: Setting hive.metastore.warehouse.dir ('null') to the value of spark.sql.warehouse.dir.
+26/06/18 10:07:51 INFO SharedState: Warehouse path is 'file:/root/spark-warehouse'.

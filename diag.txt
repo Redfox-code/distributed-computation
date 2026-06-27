@@ -1,0 +1,4 @@
+---
+ls: cannot access /root/task3_mlib_v2.txt: No such file or directory
+---
+Mem:            972         475         268           0         228         354
