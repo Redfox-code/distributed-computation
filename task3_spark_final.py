@@ -11,7 +11,7 @@
 """
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, log1p as spark_log1p
-from pyspark.ml.feature import VectorAssembler, StringIndexer
+from pyspark.ml.feature import VectorAssembler
 from pyspark.ml.regression import RandomForestRegressor, GBTRegressor
 from pyspark.ml import Pipeline
 import pandas as pd, numpy as np
@@ -69,6 +69,12 @@ if __name__ == '__main__':
         })
 
     data = pd.DataFrame(device_rows)
+
+    # ★ 在pandas里用LabelEncoder编码类别（sklearn SMOTE只认数值）
+    from sklearn.preprocessing import LabelEncoder
+    for cat_col in ['station', 'brand', 'line']:
+        data[cat_col] = LabelEncoder().fit_transform(data[cat_col].astype(str))
+
     features = ['n_failures','std_mtbf','min_mtbf','max_mtbf',
                 'avg_repair','max_repair','aging_days','fail_rate',
                 'station','brand','line']
@@ -122,17 +128,7 @@ if __name__ == '__main__':
     test_spark  = spark.createDataFrame(test_pdf[features + [target]].astype(float))
     test_spark  = test_spark.withColumn('log_target', spark_log1p(col(target)))
 
-    # StringIndexer编码类别特征
-    si_station = StringIndexer(inputCol='station', outputCol='station_idx', handleInvalid='keep')
-    si_brand   = StringIndexer(inputCol='brand',   outputCol='brand_idx',   handleInvalid='keep')
-    si_line    = StringIndexer(inputCol='line',    outputCol='line_idx',    handleInvalid='keep')
-
-    # 特征列（数值 + 编码后的类别）
-    ml_features = ['n_failures','std_mtbf','min_mtbf','max_mtbf',
-                   'avg_repair','max_repair','aging_days','fail_rate',
-                   'station_idx','brand_idx','line_idx']
-
-    assembler = VectorAssembler(inputCols=ml_features, outputCol='features')
+    assembler = VectorAssembler(inputCols=features, outputCol='features')
 
     results = {}
 
@@ -146,7 +142,7 @@ if __name__ == '__main__':
         seed=42, impurity='variance',
     )
     logger.info("RF配置: 100树 depth=10 bins=32 subsample=0.8 sqrt特征")
-    rf_model = Pipeline(stages=[si_station, si_brand, si_line, assembler, rf]).fit(train_spark)
+    rf_model = Pipeline(stages=[assembler, rf]).fit(train_spark)
     results['RF'] = time.time() - t0
     rf_preds = rf_model.transform(test_spark)
     logger.info(f"RF训练: {results['RF']:.1f}s")
@@ -161,7 +157,7 @@ if __name__ == '__main__':
         maxMemoryInMB=256,                         # ★ 限制内存，避免OOM
     )
     logger.info("GBT配置: 50轮 depth=5 bins=32 subsample=0.8")
-    gbt_model = Pipeline(stages=[si_station, si_brand, si_line, assembler, gbt]).fit(train_spark)
+    gbt_model = Pipeline(stages=[assembler, gbt]).fit(train_spark)
     results['GBT'] = time.time() - t0
     gbt_preds = gbt_model.transform(test_spark)
     logger.info(f"GBT训练: {results['GBT']:.1f}s")
