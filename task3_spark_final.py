@@ -11,7 +11,7 @@
 """
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, log1p as spark_log1p
-from pyspark.ml.feature import VectorAssembler
+from pyspark.ml.feature import VectorAssembler, StringIndexer
 from pyspark.ml.regression import RandomForestRegressor, GBTRegressor
 from pyspark.ml import Pipeline
 import pandas as pd, numpy as np
@@ -60,9 +60,9 @@ if __name__ == '__main__':
             'min_mtbf': float(np.min(intervals)), 'max_mtbf': float(np.max(intervals)),
             'avg_repair': float(np.mean(repairs)), 'max_repair': float(np.max(repairs)),
             'aging_days': float(aging), 'fail_rate': float(n / aging * 30),
-            's_enc': float(hash(str(dev_df['车站名称'].iloc[0])) % 500),
-            'b_enc': float(hash(str(dev_df['设备品牌'].iloc[0])) % 100),
-            'l_enc': float(hash(str(dev_df['线路编号'].iloc[0])) % 100),
+            'station': str(dev_df['车站名称'].iloc[0]),
+            'brand': str(dev_df['设备品牌'].iloc[0]),
+            'line': str(dev_df['线路编号'].iloc[0]),
             'avg_mtbf_h': float(np.mean(intervals)),
             # ★ 分层标签：用于划分
             'stratum': float(np.digitize([np.mean(intervals)/24], [15,23,30,40])[0]),
@@ -71,7 +71,7 @@ if __name__ == '__main__':
     data = pd.DataFrame(device_rows)
     features = ['n_failures','std_mtbf','min_mtbf','max_mtbf',
                 'avg_repair','max_repair','aging_days','fail_rate',
-                's_enc','b_enc','l_enc']
+                'station','brand','line']
     target = 'avg_mtbf_h'
     logger.info(f"设备数: {len(data)}, MTBF: {data[target].min()/24:.0f}-{data[target].max()/24:.0f}天")
 
@@ -122,7 +122,17 @@ if __name__ == '__main__':
     test_spark  = spark.createDataFrame(test_pdf[features + [target]].astype(float))
     test_spark  = test_spark.withColumn('log_target', spark_log1p(col(target)))
 
-    assembler = VectorAssembler(inputCols=features, outputCol='features')
+    # StringIndexer编码类别特征
+    si_station = StringIndexer(inputCol='station', outputCol='station_idx', handleInvalid='keep')
+    si_brand   = StringIndexer(inputCol='brand',   outputCol='brand_idx',   handleInvalid='keep')
+    si_line    = StringIndexer(inputCol='line',    outputCol='line_idx',    handleInvalid='keep')
+
+    # 特征列（数值 + 编码后的类别）
+    ml_features = ['n_failures','std_mtbf','min_mtbf','max_mtbf',
+                   'avg_repair','max_repair','aging_days','fail_rate',
+                   'station_idx','brand_idx','line_idx']
+
+    assembler = VectorAssembler(inputCols=ml_features, outputCol='features')
 
     results = {}
 
@@ -131,12 +141,12 @@ if __name__ == '__main__':
     rf = RandomForestRegressor(
         featuresCol='features', labelCol='log_target',
         numTrees=100, maxDepth=10, minInstancesPerNode=2,
-        maxBins=32, subsamplingRate=0.8,       # ★ 32分箱 + 80%子采样
-        featureSubsetStrategy='sqrt',          # ★ 每棵树随机选特征子集
+        maxBins=32, subsamplingRate=0.8,
+        featureSubsetStrategy='sqrt',
         seed=42, impurity='variance',
     )
     logger.info("RF配置: 100树 depth=10 bins=32 subsample=0.8 sqrt特征")
-    rf_model = Pipeline(stages=[assembler, rf]).fit(train_spark)
+    rf_model = Pipeline(stages=[si_station, si_brand, si_line, assembler, rf]).fit(train_spark)
     results['RF'] = time.time() - t0
     rf_preds = rf_model.transform(test_spark)
     logger.info(f"RF训练: {results['RF']:.1f}s")
@@ -151,7 +161,7 @@ if __name__ == '__main__':
         maxMemoryInMB=256,                         # ★ 限制内存，避免OOM
     )
     logger.info("GBT配置: 50轮 depth=5 bins=32 subsample=0.8")
-    gbt_model = Pipeline(stages=[assembler, gbt]).fit(train_spark)
+    gbt_model = Pipeline(stages=[si_station, si_brand, si_line, assembler, gbt]).fit(train_spark)
     results['GBT'] = time.time() - t0
     gbt_preds = gbt_model.transform(test_spark)
     logger.info(f"GBT训练: {results['GBT']:.1f}s")
