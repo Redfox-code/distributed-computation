@@ -16,7 +16,7 @@ np.random.seed(RANDOM_SEED)
 
 # ===================== 纯numpy决策树 =====================
 class NumPyTree:
-    def __init__(self, max_depth=10, min_samples=5):
+    def __init__(self, max_depth=12, min_samples=3):
         self.max_depth = max_depth; self.min_samples = min_samples
 
     def fit(self, X, y):
@@ -64,7 +64,7 @@ class NumPyTree:
 
 # ===================== 纯numpy随机森林 =====================
 class NumPyRF:
-    def __init__(self, n_trees=100, max_depth=10, min_samples=5):
+    def __init__(self, n_trees=150, max_depth=12, min_samples=3):
         self.n_trees = n_trees; self.max_depth = max_depth; self.min_samples = min_samples
 
     def fit(self, X, y):
@@ -119,13 +119,18 @@ if __name__ == '__main__':
             'min_mtbf': float(np.min(intervals)), 'max_mtbf': float(np.max(intervals)),
             'avg_repair': float(np.mean(repairs)), 'max_repair': float(np.max(repairs)),
             'aging_days': float(aging), 'fail_rate': float(n / aging * 30),
-            'station_enc': float(hash(str(dev_df['车站名称'].iloc[0])) % 500),
-            'brand_enc': float(hash(str(dev_df['设备品牌'].iloc[0])) % 100),
-            'line_enc': float(hash(str(dev_df['线路编号'].iloc[0])) % 100),
+            'station_raw': str(dev_df['车站名称'].iloc[0]),
+            'brand_raw': str(dev_df['设备品牌'].iloc[0]),
+            'line_raw': str(dev_df['线路编号'].iloc[0]),
             'avg_mtbf_h': float(np.mean(intervals)),
         })
 
     data = pd.DataFrame(device_rows)
+    # LabelEncoder编码类别
+    from sklearn.preprocessing import LabelEncoder
+    for cat_col in ['station_raw', 'brand_raw', 'line_raw']:
+        data[cat_col.replace('_raw','_enc')] = LabelEncoder().fit_transform(data[cat_col].astype(str))
+
     features = ['n_failures','std_mtbf','min_mtbf','max_mtbf',
                 'avg_repair','max_repair','aging_days','fail_rate',
                 'station_enc','brand_enc','line_enc']
@@ -151,10 +156,10 @@ if __name__ == '__main__':
 
     # ===== 3. 训练手写RF =====
     logger.info("训练纯numpy随机森林...")
-    logger.info("参数: 100树, depth=10, min_samples=5")
+    logger.info("参数: 150树, depth=12, min_samples=3, LabelEncoder编码")
 
     t0 = time.time()
-    rf = NumPyRF(n_trees=100, max_depth=10, min_samples=5)
+    rf = NumPyRF(n_trees=150, max_depth=12, min_samples=3)
     rf.fit(X_tr_s, y_tr_log)
     t_train = time.time() - t0
 
