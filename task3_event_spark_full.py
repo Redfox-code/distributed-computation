@@ -285,7 +285,7 @@ if __name__ == '__main__':
     X_bc = sc.broadcast(X_tr_s)
     y_bc = sc.broadcast(y_tr_log)
 
-    SCOUT = 100
+    SCOUT = 30  # DEBUG: 快速诊断, 正式跑改回100
     def train_scout_partition(iterator):
         X = X_bc.value; y = y_bc.value
         for task in iterator:
@@ -295,7 +295,7 @@ if __name__ == '__main__':
 
     scout_tasks = [(i, 10, 4, RANDOM_SEED + i) for i in range(SCOUT)]
     t0 = time.time()
-    scout_trees = list(sc.parallelize(scout_tasks, numSlices=min(SCOUT, 24))
+    scout_trees = list(sc.parallelize(scout_tasks, numSlices=min(SCOUT, 6))
                         .mapPartitions(train_scout_partition).collect())
     t_scout = time.time() - t0
 
@@ -316,7 +316,7 @@ if __name__ == '__main__':
     X_te_top = X_te_s[:, top10_idx].copy()
     X_bc2 = sc.broadcast(X_tr_top); y_bc2 = sc.broadcast(y_tr_log)
 
-    MAIN = 300
+    MAIN = 30  # DEBUG: 快速诊断, 正式跑改回300
     # 用mapPartitions代替map: 每个分区访问一次广播变量, 训练多棵树
     # 避免闭包序列化中广播变量引用丢失的问题
     def train_partition(iterator):
@@ -328,15 +328,27 @@ if __name__ == '__main__':
 
     main_tasks = [(i, 18, 2, RANDOM_SEED + 1000 + i) for i in range(MAIN)]
     t0 = time.time()
-    main_trees = list(sc.parallelize(main_tasks, numSlices=min(48, MAIN))
+    main_trees = list(sc.parallelize(main_tasks, numSlices=min(6, MAIN))
                        .mapPartitions(train_partition).collect())
     t_main = time.time() - t0
 
-    # 诊断: 检查收集的树是否有效
+    # 诊断: 检查收集的树是否有效 + 预测分布
     sample_tree = main_trees[0]
     is_dict = isinstance(sample_tree.tree_, dict)
     n_nodes = sum(1 for _ in str(sample_tree.tree_)) if is_dict else 0
-    logger.info(f"  主RF: {t_main:.0f}s ({len(main_trees)}棵树, 首树={'dict_ok' if is_dict else 'LEAF_ONLY!'}, 大小~{n_nodes}chars)")
+    # 取10棵树对全量测试集预测, 检查树间相关性
+    sample_preds = np.column_stack([main_trees[i].predict(X_te_top[:500]) for i in [0,30,60,90,120,150,180,210,240,270]])
+    tree_stds = sample_preds.std(axis=0)  # 每棵树预测的标准差
+    tree_means = sample_preds.mean(axis=0)  # 每棵树预测的均值
+    ensemble_std = sample_preds.mean(axis=1).std()  # 集成后的标准差
+    logger.info(f"  主RF: {t_main:.0f}s ({len(main_trees)}棵树, 首树={'dict_ok' if is_dict else 'LEAF_ONLY!'}, size~{n_nodes}chars)")
+    logger.info(f"  诊断-10棵树预测std: {tree_stds}")
+    logger.info(f"  诊断-10棵树预测mean: {tree_means}")
+    logger.info(f"  诊断-集成后std={ensemble_std:.2f} (0=全一样!)")
+    # 全量集成预测检查
+    full_preds = np.column_stack([main_trees[i].predict(X_te_top) for i in [0,50,100,150,200,250]])
+    full_std = full_preds.std(axis=1).mean()
+    logger.info(f"  诊断-6棵树全量预测平均std={full_std:.2f} (树间差异)")
 
     X_bc2.destroy(); y_bc2.destroy()
 
