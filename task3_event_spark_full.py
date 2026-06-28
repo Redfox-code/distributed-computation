@@ -89,12 +89,18 @@ def _driver_fit_encoders(csv_path):
     # 转换时间列
     for c in ['故障时间', '维修开始时间', '维修完成时间']:
         pdf[c] = pd.to_datetime(pdf[c], errors='coerce')
-    # 转为list-of-dict 用于分布 (时间→Unix时间戳, 可被pickle序列化)
+    # 转为list-of-dict 用于分布
+    # ★ 时间特征在Driver端预计算 (避免Worker上datetime.fromtimestamp的时区陷阱)
     rows = []
     for _, r in pdf.iterrows():
+        ft = r['故障时间']
         rows.append({
             'device': str(r['设备编号']),
-            'fault_ts': r['故障时间'].timestamp() if pd.notna(r['故障时间']) else 0.0,
+            'fault_ts': ft.timestamp() if pd.notna(ft) else 0.0,
+            'fault_hour': int(ft.hour) if pd.notna(ft) else 0,
+            'fault_weekday': int(ft.dayofweek) if pd.notna(ft) else 0,
+            'fault_month': int(ft.month) if pd.notna(ft) else 0,
+            'repair_start_ts': r['维修开始时间'].timestamp() if pd.notna(r['维修开始时间']) else 0.0,
             'repair_dur': float(r['维修时长_小时']) if pd.notna(r['维修时长_小时']) else 0.0,
             'repair_type': str(r['维修类型']) if pd.notna(r['维修类型']) else '',
             'station': str(r['车站名称']),
@@ -124,6 +130,10 @@ def _map_assign_partition(row, num_parts, le_station, le_brand):
     encoded = {
         'device': row['device'],
         'fault_ts': float(row['fault_ts']),
+        'fault_hour': int(row['fault_hour']),
+        'fault_weekday': int(row['fault_weekday']),
+        'fault_month': int(row['fault_month']),
+        'repair_start_ts': float(row['repair_start_ts']),
         'repair_dur': float(row['repair_dur']),
         'repair_type': 1 if 'CBM' in row['repair_type'].upper() else 0,
         'station_enc': le_station.transform([row['station']])[0],
@@ -178,11 +188,10 @@ def _compute_device_events(dev_id, rows):
     """
     rows.sort(key=lambda r: r['fault_ts'])
 
-    from datetime import datetime
-
     # 计算相邻故障间隔 (fault_ts=Unix时间戳, 单位秒)
+    # ★ 时间特征在Driver端已预计算, Worker直接使用, 避免时区陷阱
     events = []
-    hist_intervals = []  # 历史故障间隔列表
+    hist_intervals = []  # 历史故障间隔列表 (只存有效值)
 
     for i in range(1, len(rows)):
         prev_ts = rows[i - 1]['fault_ts']
@@ -190,22 +199,19 @@ def _compute_device_events(dev_id, rows):
         interval_h = (cur_ts - prev_ts) / 3600.0
 
         if interval_h <= 0:
-            hist_intervals.append(np.nan)
-            continue
+            continue  # 跳过异常间隔, 不追加到hist
 
         cur = rows[i]
         nh = len(hist_intervals)
-        # Unix时间戳 → 时间特征
-        cur_dt = datetime.fromtimestamp(cur['fault_ts'])
         aging = max((cur['fault_ts'] - rows[0]['fault_ts']) / 86400, 1)
 
         events.append({
             'device': dev_id,
-            'hour': cur_dt.hour,
-            'weekday': cur_dt.weekday(),
-            'month': cur_dt.month,
+            'hour': cur['fault_hour'],           # ★ Driver预计算
+            'weekday': cur['fault_weekday'],      # ★ 不受服务器时区影响
+            'month': cur['fault_month'],           # ★
             'repair_dur': cur['repair_dur'],
-            'response': max((cur['fault_ts'] - prev_ts) / 3600, 0),
+            'response': max((cur['repair_start_ts'] - cur['fault_ts']) / 3600, 0),
             'rtype': cur['repair_type'],
             'n_hist': nh,
             'last_int': hist_intervals[-1] if hist_intervals else 0,

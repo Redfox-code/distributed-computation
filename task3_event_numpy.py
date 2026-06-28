@@ -1,7 +1,8 @@
 """
-事件级回归 — 纯numpy RF
-========================
+事件级回归 — 纯numpy RF (单机版)
+==================================
 每次故障一行, 目标=下一次故障间隔(小时)
+含: numpy特征重要性 → 动态选Top10 → 主RF训练
 """
 import pandas as pd, numpy as np, logging, time, pickle
 
@@ -9,7 +10,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 RANDOM_SEED = 42; np.random.seed(RANDOM_SEED)
 
-# ===== 树 + RF (带特征重要性) =====
+# ===== numpy树 + RF (带特征重要性) =====
 class Tree:
     def __init__(self, md=15, ms=3): self.md=md; self.ms=ms
     def fit(self,X,y):
@@ -28,12 +29,12 @@ class Tree:
                 mse=np.sum((ys[:i+1]-sl/nl)**2)+np.sum((ys[i+1:]-sr/nr)**2)
                 g=tv-mse
                 if g>bg: bg=g; best=(f,(xs[i]+xs[i+1])/2,g)
-        return best  # (f, t, gain)
+        return best
     def _g(self,X,y,d):
         if d>=self.md or len(y)<self.ms*2: return np.mean(y)
         f,t,gain=self._s(X,y)
         if f is None: return np.mean(y)
-        self.importances_[f] += gain  # 累积MSE减少量 = 特征重要性
+        self.importances_[f] += gain
         L=X[:,f]<=t; R=~L
         if L.sum()<self.ms or R.sum()<self.ms: return np.mean(y)
         return {'f':f,'t':t,'L':self._g(X[L],y[L],d+1),'R':self._g(X[R],y[R],d+1)}
@@ -56,28 +57,22 @@ class RF:
         return self
     @property
     def feature_importances_(self):
-        """各特征MSE减少量之和 / 总减少量, 归一化到[0,1]"""
         imp = np.mean([t.importances_ for t in self.ts], axis=0)
-        s = imp.sum()
-        return imp / s if s > 0 else imp
+        s = imp.sum(); return imp/s if s>0 else imp
     def predict(self,X):
         ps=np.column_stack([t.predict(X) for t in self.ts])
         return ps.mean(axis=1)
 
 # ===== 主流程 =====
 if __name__ == '__main__':
-    logger.info("=" * 60)
-    logger.info("事件级故障间隔预测 — 纯numpy RF")
-    logger.info("=" * 60)
+    logger.info("="*60); logger.info("事件级故障间隔预测 — 纯numpy RF"); logger.info("="*60)
 
-    # 加载
     pdf = pd.read_csv('cleaned_afc_data.csv', encoding='utf-8-sig')
     for c in ['故障时间','维修开始时间','维修完成时间']:
         pdf[c] = pd.to_datetime(pdf[c], errors='coerce')
     pdf = pdf.sort_values(['设备编号','故障时间'])
 
-    # 事件级特征工程（严格时序，无泄漏）
-    logger.info("Step 1: 事件级特征工程")
+    logger.info("Step 1: 事件级特征工程 (严格时序)")
     from sklearn.preprocessing import LabelEncoder
     all_stations = pdf['车站名称'].astype(str); all_brands = pdf['设备品牌'].astype(str)
     le_s = LabelEncoder().fit(all_stations); le_b = LabelEncoder().fit(all_brands)
@@ -110,7 +105,7 @@ if __name__ == '__main__':
             hist.append(tgt)
 
     data = pd.DataFrame(rows)
-    data = data[data['last_int'] > 0]  # 首条无历史
+    data = data[data['last_int'] > 0]
     data = data[(data['target_h']>=10) & (data['target_h']<=data['target_h'].quantile(0.99))]
     logger.info(f"事件数: {len(data)}")
 
@@ -118,37 +113,34 @@ if __name__ == '__main__':
              'n_hist','last_int','avg_int','aging_days','fail_rate',
              'station_enc','brand_enc']
 
-    # 划分
     from sklearn.model_selection import train_test_split
     from sklearn.preprocessing import StandardScaler
     edevs = data['device'].unique()
     etdevs, evdevs = train_test_split(edevs, test_size=0.2, random_state=42)
     etr = data[data['device'].isin(etdevs)]; ete = data[data['device'].isin(evdevs)]
-
     X_tr = etr[feats].values.astype(np.float64); y_tr = etr['target_h'].values.astype(np.float64)
     X_te = ete[feats].values.astype(np.float64); y_te = ete['target_h'].values.astype(np.float64)
-
     scaler = StandardScaler()
     X_tr_s = scaler.fit_transform(X_tr); X_te_s = scaler.transform(X_te)
     y_tr_log = np.log1p(y_tr)
     logger.info(f"训练: {len(etr)} | 测试: {len(ete)} | 特征: {len(feats)}")
 
-    # ===== Stage 1: numpy RF算特征重要性 → 选Top10 (等价sklearn SelectFromModel) =====
-    logger.info("Stage 1: 训练scout RF (50树×depth=8) 算特征重要性...")
+    # Stage 1: scout RF → 特征重要性 → Top10
+    logger.info("Stage 1: scout RF (50树×depth=8) → 特征重要性")
     scout = RF(nt=50, md=8, ms=5)
     scout.fit(X_tr_s, y_tr_log)
     importances = scout.feature_importances_
     ranked = np.argsort(importances)[::-1]
     top10_idx = ranked[:10]
     top10_names = [feats[i] for i in top10_idx]
-    logger.info(f"  特征重要性 Top10: {top10_names}")
+    logger.info(f"  Top10: {top10_names}")
     for i, idx in enumerate(ranked):
         logger.info(f"    {i+1:2d}. {feats[idx]:12s} = {importances[idx]:.4f}")
 
     X_tr_top = X_tr_s[:, top10_idx]; X_te_top = X_te_s[:, top10_idx]
 
-    # ===== Stage 2: 主RF在Top10特征上训练 =====
-    logger.info("Stage 2: 训练主RF (150树×depth=15×ms=3)...")
+    # Stage 2: 主RF
+    logger.info("Stage 2: 主RF (150树×depth=15×ms=3)")
     t0 = time.time()
     rf = RF(nt=150, md=15, ms=3)
     rf.fit(X_tr_top, y_tr_log)
@@ -156,7 +148,7 @@ if __name__ == '__main__':
 
     y_pred = np.expm1(rf.predict(X_te_top))
 
-    # 保存 (只保存Top10特征的scaler参数)
+    # 保存
     with open('event_numpy_rf.pkl', 'wb') as f:
         pickle.dump({
             'trees': rf.ts, 'features': top10_names,
@@ -174,11 +166,11 @@ if __name__ == '__main__':
     r2 = 1-np.sum((y_te-y_pred)**2)/np.sum((y_te-y_te.mean())**2)
     acc = 100-mape
 
-    print("\n" + "=" * 60)
+    print("\n" + "="*60)
     print(f"事件级 numpy RF: 1-MAPE={acc:.1f}%")
     print(f"MAE={mae:.1f}h, RMSE={rmse:.1f}h, R2={r2:.3f}")
     print(f"训练: 150树×depth=15×ms=3, {t_train:.0f}秒")
-    if acc >= 80: print("★★ ≥80%!")
-    elif acc >= 70: print("★ ≥70%!")
-    elif acc >= 65: print("√ ≥65%")
-    else: print(f"✗ <65% (MAPE={mape:.1f}%)")
+    if acc >= 80: print("[STAR][STAR] >=80%!")
+    elif acc >= 70: print("[STAR] >=70%!")
+    elif acc >= 65: print("[PASS] >=65%")
+    else: print(f"[FAIL] <65% (MAPE={mape:.1f}%)")
