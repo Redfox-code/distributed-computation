@@ -332,21 +332,18 @@ if __name__ == '__main__':
                        .mapPartitions(train_partition).collect())
     t_main = time.time() - t0
 
-    # 诊断: 检查树结构 + 树间预测多样性
-    sample_tree = main_trees[0]
-    is_dict = isinstance(sample_tree.tree_, dict)
-    n_nodes = sum(1 for _ in str(sample_tree.tree_)) if is_dict else 0
-    n = len(main_trees)
-    # 均匀采样min(10, n)棵树检查多样性
-    check_idx = np.linspace(0, n-1, min(10, n), dtype=int)
-    sample_preds = np.column_stack([main_trees[i].predict(X_te_top[:500]) for i in check_idx])
-    tree_stds = sample_preds.std(axis=0)
-    tree_means = sample_preds.mean(axis=0)
-    ensemble_std = sample_preds.mean(axis=1).std()
-    logger.info(f"  主RF: {t_main:.0f}s ({n}棵树, 首树={'dict_ok' if is_dict else 'LEAF_ONLY!'}, size~{n_nodes}chars)")
-    logger.info(f"  诊断-{len(check_idx)}棵树预测std(log空间): {[round(x,2) for x in tree_stds]}")
-    logger.info(f"  诊断-{len(check_idx)}棵树预测mean(log空间): {[round(x,2) for x in tree_means]}")
-    logger.info(f"  诊断-集成后std={ensemble_std:.2f} (log空间, 0=全预测同一个值!)")
+    # ★ 诊断: Driver训一棵树 vs Worker训的树对比
+    np.random.seed(42)
+    driver_idx = np.random.choice(len(y_tr_log), len(y_tr_log), replace=True)
+    driver_tree = NumPyTree(18, 2)
+    driver_tree.fit(X_tr_top[driver_idx], y_tr_log[driver_idx])
+    driver_pred = driver_tree.predict(X_te_top[:100])
+    worker_pred = main_trees[0].predict(X_te_top[:100])
+    pred_corr = np.corrcoef(driver_pred, worker_pred)[0, 1]
+    logger.info(f"  主RF: {t_main:.0f}s ({len(main_trees)}棵树)")
+    logger.info(f"  DIAG-Driver树 vs Worker树预测相关性: r={pred_corr:.4f} (1.0=一致, <0.5=数据不一致!)")
+    logger.info(f"  DIAG-Driver树预测前5: {[round(x,1) for x in driver_pred[:5]]}")
+    logger.info(f"  DIAG-Worker树预测前5: {[round(x,1) for x in worker_pred[:5]]}")
 
     X_bc2.destroy(); y_bc2.destroy()
 
