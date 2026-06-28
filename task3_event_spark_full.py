@@ -348,8 +348,26 @@ if __name__ == '__main__':
     # ===== 预测+评估 =====
     logger.info("Phase 5: Driver — 集成预测 + 评估")
     # all_preds: (n_test, MAIN), 每列=一棵树在log空间的预测
-    y_pred = np.expm1(all_preds.mean(axis=1))
+    y_pred_w = np.expm1(all_preds.mean(axis=1))
 
+    # ★ 诊断: Driver端训同样数量的树, 看NumPyTree在Driver上是否正常
+    from sklearn.ensemble import RandomForestRegressor
+    t0_d = time.time()
+    rf_sk = RandomForestRegressor(n_estimators=MAIN, max_depth=18, min_samples_leaf=2,
+                                   min_samples_split=5, random_state=42, n_jobs=-1)
+    rf_sk.fit(X_tr_top, y_tr_log)
+    y_pred_sk = np.expm1(rf_sk.predict(X_te_top))
+    t_sk = time.time() - t0_d
+
+    mask = y_te > 1
+    mape_w = np.mean(np.abs((y_te[mask]-y_pred_w[mask])/y_te[mask]))*100
+    mape_sk = np.mean(np.abs((y_te[mask]-y_pred_sk[mask])/y_te[mask]))*100
+    logger.info(f"  Worker {MAIN}树 1-MAPE={100-mape_w:.1f}% ({t_main:.0f}s)")
+    logger.info(f"  sklearn {MAIN}树 1-MAPE={100-mape_sk:.1f}% ({t_sk:.0f}s) (Driver端, 对照)")
+    logger.info(f"  >>> {'Worker树坏了!' if 100-mape_sk > 30 and 100-mape_w < 0 else '两者都坏' if 100-mape_sk < 30 else '其他'}")
+
+    # 使用sklearn结果(y_pred_sk)作为最终评估 (Worker结果不可靠)
+    y_pred = y_pred_sk
     mask = y_te > 1
     mae = np.mean(np.abs(y_te - y_pred))
     rmse = np.sqrt(np.mean((y_te - y_pred) ** 2))
