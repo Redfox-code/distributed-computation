@@ -313,15 +313,15 @@ if __name__ == '__main__':
     X_bc = sc.broadcast(X_tr_s)
     y_bc = sc.broadcast(y_tr_log)
 
-    SCOUT = 50
+    SCOUT = 100
     def train_scout(task):
         idx, md, ms, seed = task; X = X_bc.value; y = y_bc.value
         np.random.seed(seed); n = len(y)
         return NumPyTree(md, ms).fit(X[np.random.choice(n, n, replace=True)], y)
 
-    scout_tasks = [(i, 8, 5, RANDOM_SEED + i) for i in range(SCOUT)]
+    scout_tasks = [(i, 10, 4, RANDOM_SEED + i) for i in range(SCOUT)]
     t0 = time.time()
-    scout_trees = sc.parallelize(scout_tasks, numSlices=min(SCOUT, 12)) \
+    scout_trees = sc.parallelize(scout_tasks, numSlices=min(SCOUT, 24)) \
                      .map(train_scout).collect()
     t_scout = time.time() - t0
 
@@ -340,15 +340,15 @@ if __name__ == '__main__':
     X_tr_top = X_tr_s[:, top10_idx]; X_te_top = X_te_s[:, top10_idx]
     X_bc2 = sc.broadcast(X_tr_top); y_bc2 = sc.broadcast(y_tr_log)
 
-    MAIN = 150
+    MAIN = 300
     def train_main(task):
         idx, md, ms, seed = task; X = X_bc2.value; y = y_bc2.value
         np.random.seed(seed); n = len(y)
         return NumPyTree(md, ms).fit(X[np.random.choice(n, n, replace=True)], y)
 
-    main_tasks = [(i, 15, 3, RANDOM_SEED + 1000 + i) for i in range(MAIN)]
+    main_tasks = [(i, 18, 2, RANDOM_SEED + 1000 + i) for i in range(MAIN)]
     t0 = time.time()
-    main_trees = sc.parallelize(main_tasks, numSlices=min(36, MAIN)) \
+    main_trees = sc.parallelize(main_tasks, numSlices=min(48, MAIN)) \
                    .map(train_main).collect()
     t_main = time.time() - t0
     logger.info(f"  主RF: {t_main:.0f}s ({MAIN}棵树)")
@@ -369,7 +369,7 @@ if __name__ == '__main__':
             'target_transform': 'log1p',
             'train_method': 'spark_full_distributed',
             'feature_eng_method': 'manual_mapreduce_shuffle',
-            'n_trees': MAIN, 'max_depth': 15, 'min_samples': 3,
+            'n_trees': MAIN, 'max_depth': 18, 'min_samples': 2,
             'importances': importances.tolist(),
             'all_feature_names': feats,
         }, f)
