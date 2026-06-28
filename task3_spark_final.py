@@ -163,6 +163,19 @@ if __name__ == '__main__':
     rf.fit(X_tr_s, y_tr_log)
     t_train = time.time() - t0
 
+    # 保存模型（150棵树列表 + 元数据）
+    import pickle
+    with open('/root/numpy_rf_model.pkl', 'wb') as f:
+        pickle.dump({
+            'trees': rf.trees_,
+            'features': features,
+            'scaler_mean': scaler.mean_.tolist(),
+            'scaler_scale': scaler.scale_.tolist(),
+            'target_transform': 'log1p',
+            'n_trees': 150, 'max_depth': 12, 'min_samples': 3,
+        }, f)
+    logger.info("模型已保存: /root/numpy_rf_model.pkl")
+
     y_pred = np.expm1(rf.predict(X_te_s))
 
     # ===== 4. 评估 =====
