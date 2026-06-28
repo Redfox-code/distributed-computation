@@ -9,12 +9,15 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 RANDOM_SEED = 42; np.random.seed(RANDOM_SEED)
 
-# ===== 树 + RF (同设备级) =====
+# ===== 树 + RF (带特征重要性) =====
 class Tree:
     def __init__(self, md=15, ms=3): self.md=md; self.ms=ms
-    def fit(self,X,y): self.t=self._g(X,y,0); return self
+    def fit(self,X,y):
+        self.n_features_ = X.shape[1]
+        self.importances_ = np.zeros(self.n_features_)
+        self.t=self._g(X,y,0); return self
     def _s(self,X,y):
-        n=len(y); bg=1e-12; best=(None,None)
+        n=len(y); bg=1e-12; best=(None,None,0.0)
         nf=max(1,int(np.sqrt(X.shape[1])))
         for f in np.random.choice(X.shape[1],nf,replace=False):
             x=X[:,f]; idx=np.argsort(x); xs,ys=x[idx],y[idx]; cs=np.cumsum(ys)
@@ -24,12 +27,13 @@ class Tree:
                 nl,nr=i+1,n-i-1; sl,sr=cs[i],cs[-1]-cs[i]
                 mse=np.sum((ys[:i+1]-sl/nl)**2)+np.sum((ys[i+1:]-sr/nr)**2)
                 g=tv-mse
-                if g>bg: bg=g; best=(f,(xs[i]+xs[i+1])/2)
-        return best[0],best[1]
+                if g>bg: bg=g; best=(f,(xs[i]+xs[i+1])/2,g)
+        return best  # (f, t, gain)
     def _g(self,X,y,d):
         if d>=self.md or len(y)<self.ms*2: return np.mean(y)
-        f,t=self._s(X,y)
+        f,t,gain=self._s(X,y)
         if f is None: return np.mean(y)
+        self.importances_[f] += gain  # 累积MSE减少量 = 特征重要性
         L=X[:,f]<=t; R=~L
         if L.sum()<self.ms or R.sum()<self.ms: return np.mean(y)
         return {'f':f,'t':t,'L':self._g(X[L],y[L],d+1),'R':self._g(X[R],y[R],d+1)}
@@ -50,6 +54,12 @@ class RF:
             self.ts.append(Tree(self.md,self.ms).fit(X[idx],y[idx]))
             if (i+1)%50==0: logger.info(f"  树 {i+1}/{self.nt}...")
         return self
+    @property
+    def feature_importances_(self):
+        """各特征MSE减少量之和 / 总减少量, 归一化到[0,1]"""
+        imp = np.mean([t.importances_ for t in self.ts], axis=0)
+        s = imp.sum()
+        return imp / s if s > 0 else imp
     def predict(self,X):
         ps=np.column_stack([t.predict(X) for t in self.ts])
         return ps.mean(axis=1)
@@ -107,7 +117,6 @@ if __name__ == '__main__':
     feats = ['hour','weekday','month','repair_dur','response','rtype',
              'n_hist','last_int','avg_int','aging_days','fail_rate',
              'station_enc','brand_enc']
-    logger.info(f"  使用全部{len(feats)}个特征 (不硬编码Top10, 让RF自行选择)")
 
     # 划分
     from sklearn.model_selection import train_test_split
@@ -122,27 +131,37 @@ if __name__ == '__main__':
     scaler = StandardScaler()
     X_tr_s = scaler.fit_transform(X_tr); X_te_s = scaler.transform(X_te)
     y_tr_log = np.log1p(y_tr)
-    logger.info(f"训练: {len(etr)} | 测试: {len(ete)}")
+    logger.info(f"训练: {len(etr)} | 测试: {len(ete)} | 特征: {len(feats)}")
 
-    # 使用全部13特征 (之前硬编码Top10可能丢弃了brand_enc等重要特征，导致负精度)
-    # sklearn版用SelectFromModel动态选Top10 → 72%; 硬编码版丢特征 → 负精度
-    logger.info(f"  使用全部{len(feats)}特征训练RF")
+    # ===== Stage 1: numpy RF算特征重要性 → 选Top10 (等价sklearn SelectFromModel) =====
+    logger.info("Stage 1: 训练scout RF (50树×depth=8) 算特征重要性...")
+    scout = RF(nt=50, md=8, ms=5)
+    scout.fit(X_tr_s, y_tr_log)
+    importances = scout.feature_importances_
+    ranked = np.argsort(importances)[::-1]
+    top10_idx = ranked[:10]
+    top10_names = [feats[i] for i in top10_idx]
+    logger.info(f"  特征重要性 Top10: {top10_names}")
+    for i, idx in enumerate(ranked):
+        logger.info(f"    {i+1:2d}. {feats[idx]:12s} = {importances[idx]:.4f}")
 
+    X_tr_top = X_tr_s[:, top10_idx]; X_te_top = X_te_s[:, top10_idx]
+
+    # ===== Stage 2: 主RF在Top10特征上训练 =====
+    logger.info("Stage 2: 训练主RF (150树×depth=15×ms=3)...")
     t0 = time.time()
-    # 参数对齐sklearn版: 150→300树, depth=15(折中10→20), min_samples=3(折中5→2)
-    # 原因: 旧版100树×depth=10×ms=5 → 严重欠拟合 → 负精度
     rf = RF(nt=150, md=15, ms=3)
-    rf.fit(X_tr_s, y_tr_log)
+    rf.fit(X_tr_top, y_tr_log)
     t_train = time.time() - t0
 
-    y_pred = np.expm1(rf.predict(X_te_s))
+    y_pred = np.expm1(rf.predict(X_te_top))
 
-    # 保存
+    # 保存 (只保存Top10特征的scaler参数)
     with open('event_numpy_rf.pkl', 'wb') as f:
         pickle.dump({
-            'trees': rf.ts, 'features': feats,
-            'scaler_mean': scaler.mean_.tolist(),
-            'scaler_scale': scaler.scale_.tolist(),
+            'trees': rf.ts, 'features': top10_names,
+            'scaler_mean': scaler.mean_[top10_idx].tolist(),
+            'scaler_scale': scaler.scale_[top10_idx].tolist(),
             'target_transform': 'log1p',
         }, f)
     logger.info("模型已保存: event_numpy_rf.pkl")
