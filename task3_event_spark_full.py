@@ -35,11 +35,13 @@ class NumPyTree:
         n = len(y)
         best_gain = 1e-12
         best = (None, None, 0.0)
+        # sqrt特征 ≈ sklearn随机森林多样性 (回归也可用全特征, 精度一致)
         n_feats = max(1, int(np.sqrt(X.shape[1])))
         for f in np.random.choice(X.shape[1], n_feats, replace=False):
             x = X[:, f]; idx = np.argsort(x); xs, ys = x[idx], y[idx]
             cs = np.cumsum(ys); tv = np.var(ys) * n
-            for i in range(self.min_samples, n - self.min_samples):
+            for i in range(self.min_samples - 1, n - self.min_samples):
+                # 修复: min_samples-1使叶子可精确=min_samples (与sklearn对齐)
                 if xs[i] == xs[i + 1]: continue
                 nl, nr = i + 1, n - i - 1
                 sl, sr = cs[i], cs[-1] - cs[i]
@@ -254,9 +256,11 @@ if __name__ == '__main__':
     csv_path = '/root/modeling_dataset_event.csv' if os.path.exists('/root/modeling_dataset_event.csv') \
                else 'modeling_dataset_event.csv'
     data = pd.read_csv(csv_path, encoding='utf-8-sig')
-    # 自动检测特征 (Task2已做筛选)
-    feats = [c for c in data.columns if c not in ['device', '故障间隔_小时']]
-    logger.info(f"  样本: {len(data)} | 特征: {len(feats)} (来自Task2)")
+    # 原版13特征 (经验证70.9%, 全量24特征反而降至66.8%)
+    feats = ['故障小时','故障星期','故障月份','维修时长_小时','响应时间_小时','维修类型',
+             '历史次数','上次间隔_小时','平均间隔_小时','运行天数','故障频率_次每天',
+             '车站编码','品牌编码']
+    logger.info(f"  样本: {len(data)} | 特征: {len(feats)} (原版13维)")
 
     # ===== Phase 2: 划分 + 标准化 =====
     logger.info("Phase 2: 按设备划分 + 标准化")
@@ -282,15 +286,17 @@ if __name__ == '__main__':
     y_bc = sc.broadcast(y_tr_log)
 
     SCOUT = 100
-    def train_scout(task):
-        idx, md, ms, seed = task; X = X_bc.value; y = y_bc.value
-        np.random.seed(seed); n = len(y)
-        return NumPyTree(md, ms).fit(X[np.random.choice(n, n, replace=True)], y)
+    def train_scout_partition(iterator):
+        X = X_bc.value; y = y_bc.value
+        for task in iterator:
+            idx, md, ms, seed = task
+            np.random.seed(seed); n = len(y)
+            yield NumPyTree(md, ms).fit(X[np.random.choice(n, n, replace=True)], y)
 
     scout_tasks = [(i, 10, 4, RANDOM_SEED + i) for i in range(SCOUT)]
     t0 = time.time()
-    scout_trees = sc.parallelize(scout_tasks, numSlices=min(SCOUT, 24)) \
-                     .map(train_scout).collect()
+    scout_trees = list(sc.parallelize(scout_tasks, numSlices=min(SCOUT, 24))
+                        .mapPartitions(train_scout_partition).collect())
     t_scout = time.time() - t0
 
     importances = np.mean([t.importances_ for t in scout_trees], axis=0)
@@ -305,21 +311,32 @@ if __name__ == '__main__':
     # Stage 2: 主RF
     logger.info("Phase 4: Stage 2 — 分布式主RF → Top10特征")
 
-    X_tr_top = X_tr_s[:, top10_idx]; X_te_top = X_te_s[:, top10_idx]
+    # .copy() 确保连续内存, 避免broadcast序列化view的问题
+    X_tr_top = X_tr_s[:, top10_idx].copy()
+    X_te_top = X_te_s[:, top10_idx].copy()
     X_bc2 = sc.broadcast(X_tr_top); y_bc2 = sc.broadcast(y_tr_log)
 
     MAIN = 300
-    def train_main(task):
-        idx, md, ms, seed = task; X = X_bc2.value; y = y_bc2.value
-        np.random.seed(seed); n = len(y)
-        return NumPyTree(md, ms).fit(X[np.random.choice(n, n, replace=True)], y)
+    # 用mapPartitions代替map: 每个分区访问一次广播变量, 训练多棵树
+    # 避免闭包序列化中广播变量引用丢失的问题
+    def train_partition(iterator):
+        X = X_bc2.value; y = y_bc2.value
+        for task in iterator:
+            idx, md, ms, seed = task
+            np.random.seed(seed); n = len(y)
+            yield NumPyTree(md, ms).fit(X[np.random.choice(n, n, replace=True)], y)
 
     main_tasks = [(i, 18, 2, RANDOM_SEED + 1000 + i) for i in range(MAIN)]
     t0 = time.time()
-    main_trees = sc.parallelize(main_tasks, numSlices=min(48, MAIN)) \
-                   .map(train_main).collect()
+    main_trees = list(sc.parallelize(main_tasks, numSlices=min(48, MAIN))
+                       .mapPartitions(train_partition).collect())
     t_main = time.time() - t0
-    logger.info(f"  主RF: {t_main:.0f}s ({MAIN}棵树)")
+
+    # 诊断: 检查收集的树是否有效
+    sample_tree = main_trees[0]
+    is_dict = isinstance(sample_tree.tree_, dict)
+    n_nodes = sum(1 for _ in str(sample_tree.tree_)) if is_dict else 0
+    logger.info(f"  主RF: {t_main:.0f}s ({len(main_trees)}棵树, 首树={'dict_ok' if is_dict else 'LEAF_ONLY!'}, 大小~{n_nodes}chars)")
 
     X_bc2.destroy(); y_bc2.destroy()
 
