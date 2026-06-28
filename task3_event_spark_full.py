@@ -1,25 +1,17 @@
 """
-事件级回归 — 全链路分布式numpy RF (Spark版)
-============================================
-全链路分布式: 数据切分→Shuffle→Reduce聚合→特征工程→树训练 全部在Worker上并行
+事件级回归 — 分布式numpy RF (Spark版)
+======================================
+使用Task2输出的 modeling_dataset_event.csv 直接训练
 
-Phase 1 [Driver] :  加载CSV → 广播原始行到集群
-Phase 2 [Map]    :  每行→(device_id, row) keyBy
-Phase 3 [Shuffle] :  partitionBy(hash(device_id)) → 同设备路由到同一Worker
-Phase 4 [Reduce]  :  分区内排序→相邻合并→每设备计算特征 ★ 手动reduceByKey
-Phase 5 [Driver]  :  collect特征表 → StandardScaler → split
-Phase 6 [广播]    :  broadcast(X_scaled, y_log) 到所有Worker
-Phase 7 [Map]     :  并行Bootstrap+训练numpy树 (同前)
-Phase 8 [Driver]  :  collect树→集成预测→评估
-
-手动实现的核心Spark算子:
-  Hash分桶:   hash(device_id) % num_partitions → 分区分配
-  Shuffle:    partitionBy → 跨Worker重分布 (等价reduceByKey的数据移动)
-  SortMerge:  分区内按键排序 → 相邻同Key合并 → 等价groupByKey+reduce
+Phase 1 [Driver] : 读取Task2建模数据集 → 划分 → 标准化
+Phase 2 [广播]   : broadcast(X_scaled, y_log) 到所有Worker
+Phase 3 [Scout]  : 分布式100树 → 特征重要性 → Top10
+Phase 4 [Main]   : 分布式300树 → Bootstrap并行训练
+Phase 5 [Driver] : collect树 → 集成预测 → 评估
 """
 from pyspark.sql import SparkSession
 import pandas as pd, numpy as np
-import logging, time, pickle
+import logging, time, pickle, os
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.model_selection import train_test_split
 
@@ -257,55 +249,25 @@ if __name__ == '__main__':
     logger.info(f"集群: 3Worker×4核=12核, 数据分区={NUM_PARTS}")
     logger.info("=" * 60)
 
-    # ===== Phase 1: Driver加载+Encoder拟合 =====
-    logger.info("Phase 1: Driver — 加载CSV + 拟合LabelEncoder")
-    raw_rows, le_station, le_brand = _driver_fit_encoders('/root/cleaned_afc_data.csv')
-    logger.info(f"  原始行数: {len(raw_rows)}")
-    # 广播Encoder到Worker (小对象)
-    le_station_bc = sc.broadcast(le_station)
-    le_brand_bc = sc.broadcast(le_brand)
+    # ===== Phase 1: 读取Task2建模数据集 =====
+    logger.info("Phase 1: 读取Task2建模数据集")
+    csv_path = '/root/modeling_dataset_event.csv' if os.path.exists('/root/modeling_dataset_event.csv') \
+               else 'modeling_dataset_event.csv'
+    data = pd.read_csv(csv_path, encoding='utf-8-sig')
+    # 自动检测特征 (Task2已做筛选)
+    feats = [c for c in data.columns if c not in ['device', '故障间隔_小时']]
+    logger.info(f"  样本: {len(data)} | 特征: {len(feats)} (来自Task2)")
 
-    # ===== Phase 2-4: 分布式Map→Shuffle→Reduce =====
-    logger.info("Phase 2 [Map]: keyBy(device_id) + Hash分区")
-    logger.info("Phase 3 [Shuffle]: partitionBy → 同设备路由到同一Worker")
-    logger.info("Phase 4 [Reduce]: 排序→合并→特征工程 (手动reduceByKey)")
-
-    t0 = time.time()
-
-    # Step 2: Map阶段 — 每行加分区号
-    def map_fn(row):
-        return _map_assign_partition(row, NUM_PARTS, le_station_bc.value, le_brand_bc.value)
-
-    paired_rdd = sc.parallelize(raw_rows, numSlices=NUM_PARTS).map(map_fn)
-
-    # Step 3: Shuffle — 按分区号重分布 (Spark底层=序列化→网络传输→反序列化)
-    # ★ 这是手动Shuffle的核心: partitionBy强制同pid数据汇聚到同一Worker
-    shuffled = paired_rdd.partitionBy(NUM_PARTS)
-
-    # Step 4: Reduce — 分区内排序+聚合+特征工程
-    event_rows = shuffled.mapPartitions(_reduce_device_features).collect()
-    t_fe = time.time() - t0
-    logger.info(f"  分布式特征工程完成: {t_fe:.0f}秒 ({len(event_rows)}个事件)")
-
-    # ===== Phase 5: Driver标准化+划分 =====
-    logger.info("Phase 5: Driver — 标准化 + 划分")
-
-    data = pd.DataFrame(event_rows)
-    data = data[data['last_int'] > 0]  # 各设备首条无历史
-    data = data[(data['target_h'] >= 10) & (data['target_h'] <= data['target_h'].quantile(0.99))]
-    logger.info(f"  过滤后事件: {len(data)}")
-
-    feats = ['hour', 'weekday', 'month', 'repair_dur', 'response', 'rtype',
-             'n_hist', 'last_int', 'avg_int', 'aging_days', 'fail_rate',
-             'station_enc', 'brand_enc']
+    # ===== Phase 2: 划分 + 标准化 =====
+    logger.info("Phase 2: 按设备划分 + 标准化")
 
     edevs = data['device'].unique()
     etdevs, evdevs = train_test_split(edevs, test_size=0.2, random_state=RANDOM_SEED)
     etr = data[data['device'].isin(etdevs)]
     ete = data[data['device'].isin(evdevs)]
 
-    X_tr = etr[feats].values.astype(np.float64); y_tr = etr['target_h'].values.astype(np.float64)
-    X_te = ete[feats].values.astype(np.float64); y_te = ete['target_h'].values.astype(np.float64)
+    X_tr = etr[feats].values.astype(np.float64); y_tr = etr['故障间隔_小时'].values.astype(np.float64)
+    X_te = ete[feats].values.astype(np.float64); y_te = ete['故障间隔_小时'].values.astype(np.float64)
 
     scaler = StandardScaler()
     X_tr_s = scaler.fit_transform(X_tr); X_te_s = scaler.transform(X_te)
@@ -314,7 +276,7 @@ if __name__ == '__main__':
 
     # ===== Phase 6-8: 分布式训练 (同前) =====
     logger.info("=" * 60)
-    logger.info("Phase 6: Stage 1 — 分布式scout RF (50树) → 特征重要性")
+    logger.info("Phase 3: Stage 1 — 分布式scout RF → 特征重要性")
 
     X_bc = sc.broadcast(X_tr_s)
     y_bc = sc.broadcast(y_tr_log)
@@ -341,7 +303,7 @@ if __name__ == '__main__':
     X_bc.destroy(); y_bc.destroy()
 
     # Stage 2: 主RF
-    logger.info("Phase 7: Stage 2 — 分布式主RF (150树) → Top10特征")
+    logger.info("Phase 4: Stage 2 — 分布式主RF → Top10特征")
 
     X_tr_top = X_tr_s[:, top10_idx]; X_te_top = X_te_s[:, top10_idx]
     X_bc2 = sc.broadcast(X_tr_top); y_bc2 = sc.broadcast(y_tr_log)
@@ -362,7 +324,7 @@ if __name__ == '__main__':
     X_bc2.destroy(); y_bc2.destroy()
 
     # ===== 预测+评估+保存 =====
-    logger.info("Phase 8: Driver — 集成预测 + 评估")
+    logger.info("Phase 5: Driver — 集成预测 + 评估")
 
     preds = np.column_stack([t.predict(X_te_top) for t in main_trees])
     y_pred = np.expm1(preds.mean(axis=1))
@@ -394,7 +356,7 @@ if __name__ == '__main__':
     print(f"  集群: 3Worker×4核=12核")
     print(f"  数据分区: {NUM_PARTS} (Hash分桶 → Shuffle → SortMerge)")
     print(f"  分布式阶段: 数据切分/Shuffle/聚合/特征工程/树训练")
-    print(f"  特征工程: {t_fe:.0f}秒 (手动MapReduce)")
+    print(f"  特征工程: 使用Task2输出 (modeling_dataset_event.csv)")
     print(f"  Scout RF: {t_scout:.0f}秒 ({SCOUT}树)")
     print(f"  主RF:     {t_main:.0f}秒 ({MAIN}树)")
     print(f"  ───────────────────────────────────────")
