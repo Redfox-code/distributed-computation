@@ -332,23 +332,21 @@ if __name__ == '__main__':
                        .mapPartitions(train_partition).collect())
     t_main = time.time() - t0
 
-    # 诊断: 检查收集的树是否有效 + 预测分布
+    # 诊断: 检查树结构 + 树间预测多样性
     sample_tree = main_trees[0]
     is_dict = isinstance(sample_tree.tree_, dict)
     n_nodes = sum(1 for _ in str(sample_tree.tree_)) if is_dict else 0
-    # 取10棵树对全量测试集预测, 检查树间相关性
-    sample_preds = np.column_stack([main_trees[i].predict(X_te_top[:500]) for i in [0,30,60,90,120,150,180,210,240,270]])
-    tree_stds = sample_preds.std(axis=0)  # 每棵树预测的标准差
-    tree_means = sample_preds.mean(axis=0)  # 每棵树预测的均值
-    ensemble_std = sample_preds.mean(axis=1).std()  # 集成后的标准差
-    logger.info(f"  主RF: {t_main:.0f}s ({len(main_trees)}棵树, 首树={'dict_ok' if is_dict else 'LEAF_ONLY!'}, size~{n_nodes}chars)")
-    logger.info(f"  诊断-10棵树预测std: {tree_stds}")
-    logger.info(f"  诊断-10棵树预测mean: {tree_means}")
-    logger.info(f"  诊断-集成后std={ensemble_std:.2f} (0=全一样!)")
-    # 全量集成预测检查
-    full_preds = np.column_stack([main_trees[i].predict(X_te_top) for i in [0,50,100,150,200,250]])
-    full_std = full_preds.std(axis=1).mean()
-    logger.info(f"  诊断-6棵树全量预测平均std={full_std:.2f} (树间差异)")
+    n = len(main_trees)
+    # 均匀采样min(10, n)棵树检查多样性
+    check_idx = np.linspace(0, n-1, min(10, n), dtype=int)
+    sample_preds = np.column_stack([main_trees[i].predict(X_te_top[:500]) for i in check_idx])
+    tree_stds = sample_preds.std(axis=0)
+    tree_means = sample_preds.mean(axis=0)
+    ensemble_std = sample_preds.mean(axis=1).std()
+    logger.info(f"  主RF: {t_main:.0f}s ({n}棵树, 首树={'dict_ok' if is_dict else 'LEAF_ONLY!'}, size~{n_nodes}chars)")
+    logger.info(f"  诊断-{len(check_idx)}棵树预测std(log空间): {[round(x,2) for x in tree_stds]}")
+    logger.info(f"  诊断-{len(check_idx)}棵树预测mean(log空间): {[round(x,2) for x in tree_means]}")
+    logger.info(f"  诊断-集成后std={ensemble_std:.2f} (log空间, 0=全预测同一个值!)")
 
     X_bc2.destroy(); y_bc2.destroy()
 
