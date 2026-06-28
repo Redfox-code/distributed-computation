@@ -311,67 +311,44 @@ if __name__ == '__main__':
     # Stage 2: 主RF
     logger.info("Phase 4: Stage 2 — 分布式主RF → Top10特征")
 
-    # .copy() 确保连续内存, 避免broadcast序列化view的问题
     X_tr_top = X_tr_s[:, top10_idx].copy()
     X_te_top = X_te_s[:, top10_idx].copy()
+    # 广播训练数据 + 测试数据 (Worker直接预测，不传树回Driver，避免序列化问题)
     X_bc2 = sc.broadcast(X_tr_top); y_bc2 = sc.broadcast(y_tr_log)
+    X_te_bc = sc.broadcast(X_te_top)
 
-    MAIN = 30  # DEBUG: 快速诊断, 正式跑改回300
-    # 用mapPartitions代替map: 每个分区访问一次广播变量, 训练多棵树
-    # 避免闭包序列化中广播变量引用丢失的问题
-    def train_partition(iterator):
+    MAIN = 30  # DEBUG, 正式跑改300
+    # ★ 核心修复: Worker训树+预测, 只返回预测数组(避免NumPyTree序列化回Driver损坏)
+    def train_and_predict(iterator):
         X = X_bc2.value; y = y_bc2.value
+        X_test = X_te_bc.value
+        preds_list = []
         for task in iterator:
             idx, md, ms, seed = task
             np.random.seed(seed); n = len(y)
-            yield NumPyTree(md, ms).fit(X[np.random.choice(n, n, replace=True)], y)
+            tree = NumPyTree(md, ms)
+            tree.fit(X[np.random.choice(n, n, replace=True)], y)
+            preds_list.append(tree.predict(X_test))
+        if preds_list:
+            return iter([np.column_stack(preds_list)])  # (n_test, n_trees_in_partition)
+        return iter([])
 
     main_tasks = [(i, 18, 2, RANDOM_SEED + 1000 + i) for i in range(MAIN)]
     t0 = time.time()
-    main_trees = list(sc.parallelize(main_tasks, numSlices=min(6, MAIN))
-                       .mapPartitions(train_partition).collect())
+    # collect: 每个分区返回一个(n_test, k)的预测矩阵
+    part_preds = sc.parallelize(main_tasks, numSlices=min(6, MAIN)) \
+                   .mapPartitions(train_and_predict).collect()
+    # 合并所有分区的预测 → (n_test, MAIN)
+    all_preds = np.column_stack(part_preds)
     t_main = time.time() - t0
+    logger.info(f"  主RF: {t_main:.0f}s ({MAIN}棵树, 预测矩阵={all_preds.shape})")
 
-    # ★ 诊断: Driver直接训5棵树, 看NumPyTree本身是否正常
-    np.random.seed(42)
-    driver_trees = []
-    for i in range(5):
-        idx = np.random.choice(len(y_tr_log), len(y_tr_log), replace=True)
-        driver_trees.append(NumPyTree(18, 2).fit(X_tr_top[idx], y_tr_log[idx]))
-    driver_preds = np.column_stack([t.predict(X_te_top) for t in driver_trees])
-    driver_ens = np.expm1(driver_preds.mean(axis=1))
-    mask = y_te > 1
-    driver_mape = np.mean(np.abs((y_te[mask]-driver_ens[mask])/y_te[mask]))*100
-    # Worker集成
-    worker_preds = np.column_stack([t.predict(X_te_top) for t in main_trees])
-    worker_ens = np.expm1(worker_preds.mean(axis=1))
-    worker_mape = np.mean(np.abs((y_te[mask]-worker_ens[mask])/y_te[mask]))*100
-    logger.info(f"  主RF: {t_main:.0f}s ({len(main_trees)}棵树)")
-    logger.info(f"  DIAG-Driver 5树集成 1-MAPE={100-driver_mape:.1f}%")
-    logger.info(f"  DIAG-Worker {len(main_trees)}树集成 1-MAPE={100-worker_mape:.1f}%")
-    logger.info(f"  {'>>> NumPyTree正常, Spark Worker有问题!' if 100-driver_mape > 30 else '>>> NumPyTree本身坏了!'}")
+    X_bc2.destroy(); y_bc2.destroy(); X_te_bc.destroy()
 
-    X_bc2.destroy(); y_bc2.destroy()
-
-    # ===== 预测+评估+保存 =====
+    # ===== 预测+评估 =====
     logger.info("Phase 5: Driver — 集成预测 + 评估")
-
-    preds = np.column_stack([t.predict(X_te_top) for t in main_trees])
-    y_pred = np.expm1(preds.mean(axis=1))
-
-    with open('/root/event_numpy_rf_full.pkl', 'wb') as f:
-        pickle.dump({
-            'trees': main_trees, 'features': top10_names,
-            'scaler_mean': scaler.mean_[top10_idx].tolist(),
-            'scaler_scale': scaler.scale_[top10_idx].tolist(),
-            'target_transform': 'log1p',
-            'train_method': 'spark_full_distributed',
-            'feature_eng_method': 'manual_mapreduce_shuffle',
-            'n_trees': MAIN, 'max_depth': 18, 'min_samples': 2,
-            'importances': importances.tolist(),
-            'all_feature_names': feats,
-        }, f)
-    logger.info("模型已保存: /root/event_numpy_rf_full.pkl")
+    # all_preds: (n_test, MAIN), 每列=一棵树在log空间的预测
+    y_pred = np.expm1(all_preds.mean(axis=1))
 
     mask = y_te > 1
     mae = np.mean(np.abs(y_te - y_pred))
