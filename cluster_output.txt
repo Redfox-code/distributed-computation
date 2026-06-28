@@ -1,216 +1,213 @@
-26/06/28 06:00:47 INFO SparkContext: Running Spark version 3.5.8
-26/06/28 06:00:47 INFO SparkContext: OS info Linux, 3.10.0-1160.el7.x86_64, amd64
-26/06/28 06:00:47 INFO SparkContext: Java version 1.8.0_131
-26/06/28 06:00:48 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
-26/06/28 06:00:48 INFO ResourceUtils: ==============================================================
-26/06/28 06:00:48 INFO ResourceUtils: No custom resources configured for spark.driver.
-26/06/28 06:00:48 INFO ResourceUtils: ==============================================================
-26/06/28 06:00:48 INFO SparkContext: Submitted application: Task3-Full-Distributed
-26/06/28 06:00:48 INFO ResourceProfile: Default ResourceProfile created, executor resources: Map(cores -> name: cores, amount: 1, script: , vendor: , memory -> name: memory, amount: 512, script: , vendor: , offHeap -> name: offHeap, amount: 0, script: , vendor: ), task resources: Map(cpus -> name: cpus, amount: 1.0)
-26/06/28 06:00:48 INFO ResourceProfile: Limiting resource is cpus at 1 tasks per executor
-26/06/28 06:00:48 INFO ResourceProfileManager: Added ResourceProfile id: 0
-26/06/28 06:00:49 INFO SecurityManager: Changing view acls to: root
-26/06/28 06:00:49 INFO SecurityManager: Changing modify acls to: root
-26/06/28 06:00:49 INFO SecurityManager: Changing view acls groups to: 
-26/06/28 06:00:49 INFO SecurityManager: Changing modify acls groups to: 
-26/06/28 06:00:49 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: root; groups with view permissions: EMPTY; users with modify permissions: root; groups with modify permissions: EMPTY
-26/06/28 06:00:50 INFO Utils: Successfully started service 'sparkDriver' on port 44444.
-26/06/28 06:00:50 INFO SparkEnv: Registering MapOutputTracker
-26/06/28 06:00:50 INFO SparkEnv: Registering BlockManagerMaster
-26/06/28 06:00:50 INFO BlockManagerMasterEndpoint: Using org.apache.spark.storage.DefaultTopologyMapper for getting topology information
-26/06/28 06:00:50 INFO BlockManagerMasterEndpoint: BlockManagerMasterEndpoint up
-26/06/28 06:00:50 INFO SparkEnv: Registering BlockManagerMasterHeartbeat
-26/06/28 06:00:50 INFO DiskBlockManager: Created local directory at /tmp/spark-tmp/blockmgr-d91299f4-36a2-482f-9ea8-f87917400655
-26/06/28 06:00:51 INFO MemoryStore: MemoryStore started with capacity 413.9 MiB
-26/06/28 06:00:51 INFO SparkEnv: Registering OutputCommitCoordinator
-26/06/28 06:00:51 INFO JettyUtils: Start Jetty 0.0.0.0:4040 for SparkUI
-26/06/28 06:00:52 INFO Utils: Successfully started service 'SparkUI' on port 4040.
-26/06/28 06:00:53 INFO StandaloneAppClient$ClientEndpoint: Connecting to master spark://Master001:7077...
-26/06/28 06:00:53 INFO TransportClientFactory: Successfully created connection to Master001/192.168.149.128:7077 after 261 ms (0 ms spent in bootstraps)
-26/06/28 06:00:54 INFO StandaloneSchedulerBackend: Connected to Spark cluster with app ID app-20260628060054-0014
-26/06/28 06:00:54 INFO StandaloneAppClient$ClientEndpoint: Executor added: app-20260628060054-0014/0 on worker-20260627225716-192.168.149.229-7078 (192.168.149.229:7078) with 1 core(s)
-26/06/28 06:00:54 INFO StandaloneSchedulerBackend: Granted executor ID app-20260628060054-0014/0 on hostPort 192.168.149.229:7078 with 1 core(s), 512.0 MiB RAM
-26/06/28 06:00:54 INFO StandaloneAppClient$ClientEndpoint: Executor added: app-20260628060054-0014/1 on worker-20260627225352-192.168.149.228-7078 (192.168.149.228:7078) with 1 core(s)
-26/06/28 06:00:54 INFO StandaloneSchedulerBackend: Granted executor ID app-20260628060054-0014/1 on hostPort 192.168.149.228:7078 with 1 core(s), 512.0 MiB RAM
-26/06/28 06:00:54 INFO StandaloneAppClient$ClientEndpoint: Executor added: app-20260628060054-0014/2 on worker-20260627225406-192.168.149.230-7078 (192.168.149.230:7078) with 1 core(s)
-26/06/28 06:00:54 INFO StandaloneSchedulerBackend: Granted executor ID app-20260628060054-0014/2 on hostPort 192.168.149.230:7078 with 1 core(s), 512.0 MiB RAM
-26/06/28 06:00:54 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 41649.
-26/06/28 06:00:54 INFO NettyBlockTransferService: Server created on Master001:41649
-26/06/28 06:00:54 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy
-26/06/28 06:00:54 INFO BlockManager: external shuffle service port = 7337
-26/06/28 06:00:54 INFO StandaloneAppClient$ClientEndpoint: Executor updated: app-20260628060054-0014/0 is now RUNNING
-26/06/28 06:00:54 INFO StandaloneAppClient$ClientEndpoint: Executor updated: app-20260628060054-0014/1 is now RUNNING
-26/06/28 06:00:54 INFO StandaloneAppClient$ClientEndpoint: Executor updated: app-20260628060054-0014/2 is now RUNNING
-26/06/28 06:00:54 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(driver, Master001, 41649, None)
-26/06/28 06:00:54 INFO BlockManagerMasterEndpoint: Registering block manager Master001:41649 with 413.9 MiB RAM, BlockManagerId(driver, Master001, 41649, None)
-26/06/28 06:00:54 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(driver, Master001, 41649, None)
-26/06/28 06:00:54 INFO BlockManager: Initialized BlockManager: BlockManagerId(driver, Master001, 41649, None)
-26/06/28 06:00:56 INFO StandaloneSchedulerBackend: SchedulerBackend is ready for scheduling beginning after reached minRegisteredResourcesRatio: 0.0
-2026-06-28 06:00:57,749 - INFO - ============================================================
-2026-06-28 06:00:57,750 - INFO - 全链路分布式 — 事件级故障间隔预测
-2026-06-28 06:00:57,750 - INFO - 集群: 3Worker×4核=12核, 数据分区=24
-2026-06-28 06:00:57,750 - INFO - ============================================================
-2026-06-28 06:00:57,750 - INFO - Phase 1: 读取Task2建模数据集
-2026-06-28 06:00:57,926 - INFO -   样本: 13339 | 特征: 13 (原版13维)
-2026-06-28 06:00:57,926 - INFO - Phase 2: 按设备划分 + 标准化
-2026-06-28 06:00:57,948 - INFO -   训练: 10545 | 测试: 2794 | 特征: 13
-2026-06-28 06:00:57,949 - INFO - ============================================================
-2026-06-28 06:00:57,949 - INFO - Phase 3: Stage 1 — 分布式scout RF → 特征重要性
-26/06/28 06:00:58 INFO MemoryStore: Block broadcast_0 stored as values in memory (estimated size 336.0 B, free 413.9 MiB)
-26/06/28 06:00:58 INFO MemoryStore: Block broadcast_0_piece0 stored as bytes in memory (estimated size 527.9 KiB, free 413.4 MiB)
-26/06/28 06:00:58 INFO BlockManagerInfo: Added broadcast_0_piece0 in memory on Master001:41649 (size: 527.9 KiB, free: 413.4 MiB)
-26/06/28 06:00:58 INFO SparkContext: Created broadcast 0 from broadcast at NativeMethodAccessorImpl.java:0
-26/06/28 06:00:58 INFO MemoryStore: Block broadcast_1 stored as values in memory (estimated size 336.0 B, free 413.4 MiB)
-26/06/28 06:00:58 INFO MemoryStore: Block broadcast_1_piece0 stored as bytes in memory (estimated size 83.2 KiB, free 413.3 MiB)
-26/06/28 06:00:58 INFO BlockManagerInfo: Added broadcast_1_piece0 in memory on Master001:41649 (size: 83.2 KiB, free: 413.3 MiB)
-26/06/28 06:00:58 INFO SparkContext: Created broadcast 1 from broadcast at NativeMethodAccessorImpl.java:0
-26/06/28 06:01:00 INFO SparkContext: Starting job: collect at /root/task3_event_spark_full.py:298
-26/06/28 06:01:00 INFO StandaloneSchedulerBackend$StandaloneDriverEndpoint: Registered executor NettyRpcEndpointRef(spark-client://Executor) (192.168.149.229:48102) with ID 0,  ResourceProfileId 0
-26/06/28 06:01:00 INFO DAGScheduler: Got job 0 (collect at /root/task3_event_spark_full.py:298) with 6 output partitions
-26/06/28 06:01:00 INFO DAGScheduler: Final stage: ResultStage 0 (collect at /root/task3_event_spark_full.py:298)
-26/06/28 06:01:00 INFO DAGScheduler: Parents of final stage: List()
-26/06/28 06:01:00 INFO DAGScheduler: Missing parents: List()
-26/06/28 06:01:00 INFO DAGScheduler: Submitting ResultStage 0 (PythonRDD[1] at collect at /root/task3_event_spark_full.py:298), which has no missing parents
-26/06/28 06:01:00 INFO StandaloneSchedulerBackend$StandaloneDriverEndpoint: Registered executor NettyRpcEndpointRef(spark-client://Executor) (192.168.149.228:38936) with ID 1,  ResourceProfileId 0
-26/06/28 06:01:00 INFO StandaloneSchedulerBackend$StandaloneDriverEndpoint: Registered executor NettyRpcEndpointRef(spark-client://Executor) (192.168.149.230:39192) with ID 2,  ResourceProfileId 0
-26/06/28 06:01:00 INFO BlockManagerMasterEndpoint: Registering block manager 192.168.149.229:34998 with 117.0 MiB RAM, BlockManagerId(0, 192.168.149.229, 34998, None)
-26/06/28 06:01:00 INFO MemoryStore: Block broadcast_2 stored as values in memory (estimated size 8.9 KiB, free 413.3 MiB)
-26/06/28 06:01:00 INFO MemoryStore: Block broadcast_2_piece0 stored as bytes in memory (estimated size 6.0 KiB, free 413.3 MiB)
-26/06/28 06:01:00 INFO BlockManagerInfo: Added broadcast_2_piece0 in memory on Master001:41649 (size: 6.0 KiB, free: 413.3 MiB)
-26/06/28 06:01:00 INFO SparkContext: Created broadcast 2 from broadcast at DAGScheduler.scala:1611
-26/06/28 06:01:00 INFO BlockManagerMasterEndpoint: Registering block manager 192.168.149.230:32855 with 117.0 MiB RAM, BlockManagerId(2, 192.168.149.230, 32855, None)
-26/06/28 06:01:00 INFO BlockManagerMasterEndpoint: Registering block manager 192.168.149.228:38006 with 117.0 MiB RAM, BlockManagerId(1, 192.168.149.228, 38006, None)
-26/06/28 06:01:00 INFO DAGScheduler: Submitting 6 missing tasks from ResultStage 0 (PythonRDD[1] at collect at /root/task3_event_spark_full.py:298) (first 15 tasks are for partitions Vector(0, 1, 2, 3, 4, 5))
-26/06/28 06:01:00 INFO TaskSchedulerImpl: Adding task set 0.0 with 6 tasks resource profile 0
-26/06/28 06:01:01 INFO TaskSetManager: Starting task 0.0 in stage 0.0 (TID 0) (192.168.149.230, executor 2, partition 0, PROCESS_LOCAL, 9064 bytes) 
-26/06/28 06:01:01 INFO TaskSetManager: Starting task 1.0 in stage 0.0 (TID 1) (192.168.149.229, executor 0, partition 1, PROCESS_LOCAL, 9064 bytes) 
-26/06/28 06:01:01 INFO TaskSetManager: Starting task 2.0 in stage 0.0 (TID 2) (192.168.149.228, executor 1, partition 2, PROCESS_LOCAL, 9064 bytes) 
-26/06/28 06:01:01 INFO BlockManagerInfo: Added broadcast_2_piece0 in memory on 192.168.149.230:32855 (size: 6.0 KiB, free: 117.0 MiB)
-26/06/28 06:01:01 INFO BlockManagerInfo: Added broadcast_2_piece0 in memory on 192.168.149.228:38006 (size: 6.0 KiB, free: 117.0 MiB)
-26/06/28 06:01:01 INFO BlockManagerInfo: Added broadcast_2_piece0 in memory on 192.168.149.229:34998 (size: 6.0 KiB, free: 117.0 MiB)
-26/06/28 06:01:04 INFO BlockManagerInfo: Added broadcast_1_piece0 in memory on 192.168.149.230:32855 (size: 83.2 KiB, free: 116.9 MiB)
-26/06/28 06:01:04 INFO BlockManagerInfo: Added broadcast_1_piece0 in memory on 192.168.149.229:34998 (size: 83.2 KiB, free: 116.9 MiB)
-26/06/28 06:01:04 INFO BlockManagerInfo: Added broadcast_1_piece0 in memory on 192.168.149.228:38006 (size: 83.2 KiB, free: 116.9 MiB)
-26/06/28 06:01:04 INFO BlockManagerInfo: Added broadcast_1_python on disk on 192.168.149.230:32855 (size: 82.5 KiB)
-26/06/28 06:01:04 INFO BlockManagerInfo: Added broadcast_1_python on disk on 192.168.149.229:34998 (size: 82.5 KiB)
-26/06/28 06:01:04 INFO BlockManagerInfo: Added broadcast_1_python on disk on 192.168.149.228:38006 (size: 82.5 KiB)
-26/06/28 06:01:04 INFO BlockManagerInfo: Added broadcast_0_piece0 in memory on 192.168.149.230:32855 (size: 527.9 KiB, free: 116.4 MiB)
-26/06/28 06:01:04 INFO BlockManagerInfo: Added broadcast_0_piece0 in memory on 192.168.149.229:34998 (size: 527.9 KiB, free: 116.4 MiB)
-26/06/28 06:01:04 INFO BlockManagerInfo: Added broadcast_0_piece0 in memory on 192.168.149.228:38006 (size: 527.9 KiB, free: 116.4 MiB)
-26/06/28 06:01:04 INFO BlockManagerInfo: Added broadcast_0_python on disk on 192.168.149.228:38006 (size: 1071.1 KiB)
-26/06/28 06:01:04 INFO BlockManagerInfo: Added broadcast_0_python on disk on 192.168.149.230:32855 (size: 1071.1 KiB)
-26/06/28 06:01:04 INFO BlockManagerInfo: Added broadcast_0_python on disk on 192.168.149.229:34998 (size: 1071.1 KiB)
-26/06/28 06:01:25 INFO TaskSetManager: Starting task 3.0 in stage 0.0 (TID 3) (192.168.149.229, executor 0, partition 3, PROCESS_LOCAL, 9064 bytes) 
-26/06/28 06:01:25 INFO TaskSetManager: Finished task 1.0 in stage 0.0 (TID 1) in 24659 ms on 192.168.149.229 (executor 0) (1/6)
-26/06/28 06:01:25 INFO PythonAccumulatorV2: Connected to AccumulatorServer at host: 127.0.0.1 port: 35976
-26/06/28 06:01:27 INFO TaskSetManager: Starting task 4.0 in stage 0.0 (TID 4) (192.168.149.230, executor 2, partition 4, PROCESS_LOCAL, 9064 bytes) 
-26/06/28 06:01:27 INFO TaskSetManager: Finished task 0.0 in stage 0.0 (TID 0) in 26326 ms on 192.168.149.230 (executor 2) (2/6)
-26/06/28 06:01:31 INFO TaskSetManager: Starting task 5.0 in stage 0.0 (TID 5) (192.168.149.228, executor 1, partition 5, PROCESS_LOCAL, 9064 bytes) 
-26/06/28 06:01:31 INFO TaskSetManager: Finished task 2.0 in stage 0.0 (TID 2) in 30376 ms on 192.168.149.228 (executor 1) (3/6)
-26/06/28 06:01:47 INFO TaskSetManager: Finished task 3.0 in stage 0.0 (TID 3) in 21710 ms on 192.168.149.229 (executor 0) (4/6)
-26/06/28 06:01:48 INFO TaskSetManager: Finished task 4.0 in stage 0.0 (TID 4) in 21224 ms on 192.168.149.230 (executor 2) (5/6)
-26/06/28 06:01:52 INFO TaskSetManager: Finished task 5.0 in stage 0.0 (TID 5) in 20810 ms on 192.168.149.228 (executor 1) (6/6)
-26/06/28 06:01:52 INFO TaskSchedulerImpl: Removed TaskSet 0.0, whose tasks have all completed, from pool 
-26/06/28 06:01:52 INFO DAGScheduler: ResultStage 0 (collect at /root/task3_event_spark_full.py:298) finished in 51.747 s
-26/06/28 06:01:52 INFO DAGScheduler: Job 0 is finished. Cancelling potential speculative or zombie tasks for this job
-26/06/28 06:01:52 INFO TaskSchedulerImpl: Killing all running tasks in stage 0: Stage finished
-26/06/28 06:01:52 INFO DAGScheduler: Job 0 finished: collect at /root/task3_event_spark_full.py:298, took 52.067271 s
-2026-06-28 06:01:52,475 - INFO -   Scout: 54s | Top10: ['上次间隔_小时', '运行天数', '平均间隔_小时', '响应时间_小时', '故障频率_次每天', '车站编码', '维修时长_小时', '故障小时', '历史次数', '故障月份']
-26/06/28 06:01:52 INFO TorrentBroadcast: Destroying Broadcast(0) (from destroy at NativeMethodAccessorImpl.java:0)
-26/06/28 06:01:52 INFO TorrentBroadcast: Destroying Broadcast(1) (from destroy at NativeMethodAccessorImpl.java:0)
-26/06/28 06:01:52 INFO BlockManagerInfo: Removed broadcast_0_piece0 on 192.168.149.230:32855 in memory (size: 527.9 KiB, free: 116.9 MiB)
-26/06/28 06:01:52 INFO BlockManagerInfo: Removed broadcast_0_piece0 on 192.168.149.228:38006 in memory (size: 527.9 KiB, free: 116.9 MiB)
-26/06/28 06:01:52 INFO BlockManagerInfo: Removed broadcast_0_piece0 on 192.168.149.229:34998 in memory (size: 527.9 KiB, free: 116.9 MiB)
-2026-06-28 06:01:52,610 - INFO - Phase 4: Stage 2 — 分布式主RF → Top10特征
-26/06/28 06:01:52 INFO BlockManagerInfo: Removed broadcast_1_python on 192.168.149.228:38006 on disk (size: 82.5 KiB)
-26/06/28 06:01:52 INFO BlockManagerInfo: Removed broadcast_0_python on 192.168.149.228:38006 on disk (size: 1071.1 KiB)
-26/06/28 06:01:52 INFO BlockManagerInfo: Removed broadcast_1_python on 192.168.149.230:32855 on disk (size: 82.5 KiB)
-26/06/28 06:01:52 INFO BlockManagerInfo: Removed broadcast_0_python on 192.168.149.230:32855 on disk (size: 1071.1 KiB)
-26/06/28 06:01:52 INFO BlockManagerInfo: Removed broadcast_1_python on 192.168.149.229:34998 on disk (size: 82.5 KiB)
-26/06/28 06:01:52 INFO BlockManagerInfo: Removed broadcast_0_python on 192.168.149.229:34998 on disk (size: 1071.1 KiB)
-26/06/28 06:01:52 INFO MemoryStore: Block broadcast_3 stored as values in memory (estimated size 336.0 B, free 413.8 MiB)
-26/06/28 06:01:52 INFO BlockManagerInfo: Removed broadcast_1_piece0 on Master001:41649 in memory (size: 83.2 KiB, free: 413.4 MiB)
-26/06/28 06:01:52 INFO MemoryStore: Block broadcast_3_piece0 stored as bytes in memory (estimated size 564.2 KiB, free 413.4 MiB)
-26/06/28 06:01:52 INFO BlockManagerInfo: Removed broadcast_0_piece0 on Master001:41649 in memory (size: 527.9 KiB, free: 413.9 MiB)
-26/06/28 06:01:52 INFO BlockManagerInfo: Added broadcast_3_piece0 in memory on Master001:41649 (size: 564.2 KiB, free: 413.4 MiB)
-26/06/28 06:01:52 INFO SparkContext: Created broadcast 3 from broadcast at NativeMethodAccessorImpl.java:0
-26/06/28 06:01:52 INFO BlockManagerInfo: Removed broadcast_1_piece0 on 192.168.149.228:38006 in memory (size: 83.2 KiB, free: 117.0 MiB)
-26/06/28 06:01:52 INFO MemoryStore: Block broadcast_4 stored as values in memory (estimated size 336.0 B, free 413.4 MiB)
-26/06/28 06:01:52 INFO MemoryStore: Block broadcast_4_piece0 stored as bytes in memory (estimated size 83.2 KiB, free 413.3 MiB)
-26/06/28 06:01:52 INFO BlockManagerInfo: Added broadcast_4_piece0 in memory on Master001:41649 (size: 83.2 KiB, free: 413.3 MiB)
-26/06/28 06:01:52 INFO SparkContext: Created broadcast 4 from broadcast at NativeMethodAccessorImpl.java:0
-26/06/28 06:01:52 INFO BlockManagerInfo: Removed broadcast_1_piece0 on 192.168.149.230:32855 in memory (size: 83.2 KiB, free: 117.0 MiB)
-26/06/28 06:01:52 INFO BlockManagerInfo: Removed broadcast_1_piece0 on 192.168.149.229:34998 in memory (size: 83.2 KiB, free: 117.0 MiB)
-26/06/28 06:01:52 INFO SparkContext: Starting job: collect at /root/task3_event_spark_full.py:331
-26/06/28 06:01:52 INFO DAGScheduler: Got job 1 (collect at /root/task3_event_spark_full.py:331) with 6 output partitions
-26/06/28 06:01:52 INFO DAGScheduler: Final stage: ResultStage 1 (collect at /root/task3_event_spark_full.py:331)
-26/06/28 06:01:52 INFO DAGScheduler: Parents of final stage: List()
-26/06/28 06:01:52 INFO DAGScheduler: Missing parents: List()
-26/06/28 06:01:52 INFO DAGScheduler: Submitting ResultStage 1 (PythonRDD[3] at collect at /root/task3_event_spark_full.py:331), which has no missing parents
-26/06/28 06:01:52 INFO MemoryStore: Block broadcast_5 stored as values in memory (estimated size 9.0 KiB, free 413.3 MiB)
-26/06/28 06:01:52 INFO MemoryStore: Block broadcast_5_piece0 stored as bytes in memory (estimated size 6.0 KiB, free 413.3 MiB)
-26/06/28 06:01:52 INFO BlockManagerInfo: Added broadcast_5_piece0 in memory on Master001:41649 (size: 6.0 KiB, free: 413.3 MiB)
-26/06/28 06:01:52 INFO SparkContext: Created broadcast 5 from broadcast at DAGScheduler.scala:1611
-26/06/28 06:01:52 INFO DAGScheduler: Submitting 6 missing tasks from ResultStage 1 (PythonRDD[3] at collect at /root/task3_event_spark_full.py:331) (first 15 tasks are for partitions Vector(0, 1, 2, 3, 4, 5))
-26/06/28 06:01:52 INFO TaskSchedulerImpl: Adding task set 1.0 with 6 tasks resource profile 0
-26/06/28 06:01:52 INFO TaskSetManager: Starting task 0.0 in stage 1.0 (TID 6) (192.168.149.229, executor 0, partition 0, PROCESS_LOCAL, 9069 bytes) 
-26/06/28 06:01:52 INFO TaskSetManager: Starting task 1.0 in stage 1.0 (TID 7) (192.168.149.228, executor 1, partition 1, PROCESS_LOCAL, 9069 bytes) 
-26/06/28 06:01:52 INFO TaskSetManager: Starting task 2.0 in stage 1.0 (TID 8) (192.168.149.230, executor 2, partition 2, PROCESS_LOCAL, 9069 bytes) 
-26/06/28 06:01:53 INFO BlockManagerInfo: Added broadcast_5_piece0 in memory on 192.168.149.229:34998 (size: 6.0 KiB, free: 117.0 MiB)
-26/06/28 06:01:53 INFO BlockManagerInfo: Added broadcast_5_piece0 in memory on 192.168.149.230:32855 (size: 6.0 KiB, free: 117.0 MiB)
-26/06/28 06:01:53 INFO BlockManagerInfo: Added broadcast_5_piece0 in memory on 192.168.149.228:38006 (size: 6.0 KiB, free: 117.0 MiB)
-26/06/28 06:01:53 INFO BlockManagerInfo: Added broadcast_3_piece0 in memory on 192.168.149.229:34998 (size: 564.2 KiB, free: 116.4 MiB)
-26/06/28 06:01:53 INFO BlockManagerInfo: Added broadcast_3_python on disk on 192.168.149.229:34998 (size: 824.0 KiB)
-26/06/28 06:01:53 INFO BlockManagerInfo: Added broadcast_3_piece0 in memory on 192.168.149.230:32855 (size: 564.2 KiB, free: 116.4 MiB)
-26/06/28 06:01:53 INFO BlockManagerInfo: Added broadcast_3_piece0 in memory on 192.168.149.228:38006 (size: 564.2 KiB, free: 116.4 MiB)
-26/06/28 06:01:53 INFO BlockManagerInfo: Added broadcast_3_python on disk on 192.168.149.230:32855 (size: 824.0 KiB)
-26/06/28 06:01:53 INFO BlockManagerInfo: Added broadcast_3_python on disk on 192.168.149.228:38006 (size: 824.0 KiB)
-26/06/28 06:01:53 INFO BlockManagerInfo: Added broadcast_4_piece0 in memory on 192.168.149.229:34998 (size: 83.2 KiB, free: 116.3 MiB)
-26/06/28 06:01:53 INFO BlockManagerInfo: Added broadcast_4_piece0 in memory on 192.168.149.230:32855 (size: 83.2 KiB, free: 116.3 MiB)
-26/06/28 06:01:53 INFO BlockManagerInfo: Added broadcast_4_python on disk on 192.168.149.229:34998 (size: 82.5 KiB)
-26/06/28 06:01:53 INFO BlockManagerInfo: Added broadcast_4_python on disk on 192.168.149.230:32855 (size: 82.5 KiB)
-26/06/28 06:01:53 INFO BlockManagerInfo: Added broadcast_4_piece0 in memory on 192.168.149.228:38006 (size: 83.2 KiB, free: 116.3 MiB)
-26/06/28 06:01:53 INFO BlockManagerInfo: Added broadcast_4_python on disk on 192.168.149.228:38006 (size: 82.5 KiB)
-26/06/28 06:02:42 INFO TaskSetManager: Starting task 3.0 in stage 1.0 (TID 9) (192.168.149.229, executor 0, partition 3, PROCESS_LOCAL, 9069 bytes) 
-26/06/28 06:02:42 INFO TaskSetManager: Finished task 0.0 in stage 1.0 (TID 6) in 49947 ms on 192.168.149.229 (executor 0) (1/6)
-26/06/28 06:02:43 INFO TaskSetManager: Starting task 4.0 in stage 1.0 (TID 10) (192.168.149.228, executor 1, partition 4, PROCESS_LOCAL, 9069 bytes) 
-26/06/28 06:02:43 INFO TaskSetManager: Finished task 1.0 in stage 1.0 (TID 7) in 50533 ms on 192.168.149.228 (executor 1) (2/6)
-26/06/28 06:02:49 INFO TaskSetManager: Starting task 5.0 in stage 1.0 (TID 11) (192.168.149.230, executor 2, partition 5, PROCESS_LOCAL, 9069 bytes) 
-26/06/28 06:02:49 INFO TaskSetManager: Finished task 2.0 in stage 1.0 (TID 8) in 56577 ms on 192.168.149.230 (executor 2) (3/6)
-26/06/28 06:03:33 INFO TaskSetManager: Finished task 3.0 in stage 1.0 (TID 9) in 50082 ms on 192.168.149.229 (executor 0) (4/6)
-26/06/28 06:03:33 INFO BlockManagerInfo: Removed broadcast_2_piece0 on 192.168.149.228:38006 in memory (size: 6.0 KiB, free: 116.3 MiB)
-26/06/28 06:03:33 INFO BlockManagerInfo: Removed broadcast_2_piece0 on 192.168.149.230:32855 in memory (size: 6.0 KiB, free: 116.3 MiB)
-26/06/28 06:03:33 INFO BlockManagerInfo: Removed broadcast_2_piece0 on 192.168.149.229:34998 in memory (size: 6.0 KiB, free: 116.3 MiB)
-26/06/28 06:03:33 INFO BlockManagerInfo: Removed broadcast_2_piece0 on Master001:41649 in memory (size: 6.0 KiB, free: 413.3 MiB)
-26/06/28 06:03:33 INFO TaskSetManager: Finished task 4.0 in stage 1.0 (TID 10) in 50289 ms on 192.168.149.228 (executor 1) (5/6)
-26/06/28 06:03:41 INFO TaskSetManager: Finished task 5.0 in stage 1.0 (TID 11) in 52320 ms on 192.168.149.230 (executor 2) (6/6)
-26/06/28 06:03:41 INFO TaskSchedulerImpl: Removed TaskSet 1.0, whose tasks have all completed, from pool 
-26/06/28 06:03:41 INFO DAGScheduler: ResultStage 1 (collect at /root/task3_event_spark_full.py:331) finished in 108.929 s
-26/06/28 06:03:41 INFO DAGScheduler: Job 1 is finished. Cancelling potential speculative or zombie tasks for this job
-26/06/28 06:03:41 INFO TaskSchedulerImpl: Killing all running tasks in stage 1: Stage finished
-26/06/28 06:03:41 INFO DAGScheduler: Job 1 finished: collect at /root/task3_event_spark_full.py:331, took 109.012049 s
-2026-06-28 06:03:53,047 - INFO -   主RF: 109s (30棵树)
-2026-06-28 06:03:53,047 - INFO -   DIAG-Driver树 vs Worker树预测相关性: r=0.0568 (1.0=一致, <0.5=数据不一致!)
-2026-06-28 06:03:53,048 - INFO -   DIAG-Driver树预测前5: [7.4, 3.4, 7.9, 2.9, 5.1]
-2026-06-28 06:03:53,048 - INFO -   DIAG-Worker树预测前5: [8.2, 3.7, 4.8, 5.9, 6.2]
-26/06/28 06:03:53 INFO TorrentBroadcast: Destroying Broadcast(3) (from destroy at NativeMethodAccessorImpl.java:0)
-26/06/28 06:03:53 INFO TorrentBroadcast: Destroying Broadcast(4) (from destroy at NativeMethodAccessorImpl.java:0)
-2026-06-28 06:03:53,063 - INFO - Phase 5: Driver — 集成预测 + 评估
-26/06/28 06:03:53 INFO BlockManagerInfo: Removed broadcast_3_python on 192.168.149.228:38006 on disk (size: 824.0 KiB)
-26/06/28 06:03:53 INFO BlockManagerInfo: Removed broadcast_4_piece0 on 192.168.149.228:38006 in memory (size: 83.2 KiB, free: 116.4 MiB)
-26/06/28 06:03:53 INFO BlockManagerInfo: Removed broadcast_3_python on 192.168.149.229:34998 on disk (size: 824.0 KiB)
-26/06/28 06:03:53 INFO BlockManagerInfo: Removed broadcast_4_piece0 on 192.168.149.229:34998 in memory (size: 83.2 KiB, free: 116.4 MiB)
-26/06/28 06:03:53 INFO BlockManagerInfo: Removed broadcast_3_python on 192.168.149.230:32855 on disk (size: 824.0 KiB)
-26/06/28 06:03:53 INFO BlockManagerInfo: Removed broadcast_4_piece0 on 192.168.149.230:32855 in memory (size: 83.2 KiB, free: 116.4 MiB)
-26/06/28 06:03:53 INFO BlockManagerInfo: Removed broadcast_3_piece0 on Master001:41649 in memory (size: 564.2 KiB, free: 413.8 MiB)
-26/06/28 06:03:53 INFO BlockManagerInfo: Removed broadcast_4_python on 192.168.149.228:38006 on disk (size: 82.5 KiB)
-26/06/28 06:03:53 INFO BlockManagerInfo: Removed broadcast_3_piece0 on 192.168.149.229:34998 in memory (size: 564.2 KiB, free: 117.0 MiB)
-26/06/28 06:03:53 INFO BlockManagerInfo: Removed broadcast_4_python on 192.168.149.229:34998 on disk (size: 82.5 KiB)
-26/06/28 06:03:53 INFO BlockManagerInfo: Removed broadcast_3_piece0 on 192.168.149.228:38006 in memory (size: 564.2 KiB, free: 117.0 MiB)
-26/06/28 06:03:53 INFO BlockManagerInfo: Removed broadcast_3_piece0 on 192.168.149.230:32855 in memory (size: 564.2 KiB, free: 117.0 MiB)
-26/06/28 06:03:53 INFO BlockManagerInfo: Removed broadcast_4_python on 192.168.149.230:32855 on disk (size: 82.5 KiB)
-26/06/28 06:03:53 INFO BlockManagerInfo: Removed broadcast_4_piece0 on Master001:41649 in memory (size: 83.2 KiB, free: 413.9 MiB)
-2026-06-28 06:03:54,769 - INFO - 模型已保存: /root/event_numpy_rf_full.pkl
+26/06/28 06:05:55 INFO SparkContext: Running Spark version 3.5.8
+26/06/28 06:05:55 INFO SparkContext: OS info Linux, 3.10.0-1160.el7.x86_64, amd64
+26/06/28 06:05:55 INFO SparkContext: Java version 1.8.0_131
+26/06/28 06:05:55 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+26/06/28 06:05:55 INFO ResourceUtils: ==============================================================
+26/06/28 06:05:55 INFO ResourceUtils: No custom resources configured for spark.driver.
+26/06/28 06:05:55 INFO ResourceUtils: ==============================================================
+26/06/28 06:05:55 INFO SparkContext: Submitted application: Task3-Full-Distributed
+26/06/28 06:05:56 INFO ResourceProfile: Default ResourceProfile created, executor resources: Map(cores -> name: cores, amount: 1, script: , vendor: , memory -> name: memory, amount: 512, script: , vendor: , offHeap -> name: offHeap, amount: 0, script: , vendor: ), task resources: Map(cpus -> name: cpus, amount: 1.0)
+26/06/28 06:05:56 INFO ResourceProfile: Limiting resource is cpus at 1 tasks per executor
+26/06/28 06:05:56 INFO ResourceProfileManager: Added ResourceProfile id: 0
+26/06/28 06:05:56 INFO SecurityManager: Changing view acls to: root
+26/06/28 06:05:56 INFO SecurityManager: Changing modify acls to: root
+26/06/28 06:05:56 INFO SecurityManager: Changing view acls groups to: 
+26/06/28 06:05:56 INFO SecurityManager: Changing modify acls groups to: 
+26/06/28 06:05:56 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: root; groups with view permissions: EMPTY; users with modify permissions: root; groups with modify permissions: EMPTY
+26/06/28 06:05:57 INFO Utils: Successfully started service 'sparkDriver' on port 42082.
+26/06/28 06:05:57 INFO SparkEnv: Registering MapOutputTracker
+26/06/28 06:05:57 INFO SparkEnv: Registering BlockManagerMaster
+26/06/28 06:05:58 INFO BlockManagerMasterEndpoint: Using org.apache.spark.storage.DefaultTopologyMapper for getting topology information
+26/06/28 06:05:58 INFO BlockManagerMasterEndpoint: BlockManagerMasterEndpoint up
+26/06/28 06:05:58 INFO SparkEnv: Registering BlockManagerMasterHeartbeat
+26/06/28 06:05:58 INFO DiskBlockManager: Created local directory at /tmp/spark-tmp/blockmgr-6d9edcad-05bc-4adf-8cba-407a164b26f5
+26/06/28 06:05:58 INFO MemoryStore: MemoryStore started with capacity 413.9 MiB
+26/06/28 06:05:58 INFO SparkEnv: Registering OutputCommitCoordinator
+26/06/28 06:05:58 INFO JettyUtils: Start Jetty 0.0.0.0:4040 for SparkUI
+26/06/28 06:05:58 INFO Utils: Successfully started service 'SparkUI' on port 4040.
+26/06/28 06:05:59 INFO StandaloneAppClient$ClientEndpoint: Connecting to master spark://Master001:7077...
+26/06/28 06:06:00 INFO TransportClientFactory: Successfully created connection to Master001/192.168.149.128:7077 after 211 ms (0 ms spent in bootstraps)
+26/06/28 06:06:00 INFO StandaloneSchedulerBackend: Connected to Spark cluster with app ID app-20260628060600-0015
+26/06/28 06:06:00 INFO StandaloneAppClient$ClientEndpoint: Executor added: app-20260628060600-0015/0 on worker-20260627225716-192.168.149.229-7078 (192.168.149.229:7078) with 1 core(s)
+26/06/28 06:06:00 INFO StandaloneSchedulerBackend: Granted executor ID app-20260628060600-0015/0 on hostPort 192.168.149.229:7078 with 1 core(s), 512.0 MiB RAM
+26/06/28 06:06:00 INFO StandaloneAppClient$ClientEndpoint: Executor added: app-20260628060600-0015/1 on worker-20260627225352-192.168.149.228-7078 (192.168.149.228:7078) with 1 core(s)
+26/06/28 06:06:00 INFO StandaloneSchedulerBackend: Granted executor ID app-20260628060600-0015/1 on hostPort 192.168.149.228:7078 with 1 core(s), 512.0 MiB RAM
+26/06/28 06:06:00 INFO StandaloneAppClient$ClientEndpoint: Executor added: app-20260628060600-0015/2 on worker-20260627225406-192.168.149.230-7078 (192.168.149.230:7078) with 1 core(s)
+26/06/28 06:06:00 INFO StandaloneSchedulerBackend: Granted executor ID app-20260628060600-0015/2 on hostPort 192.168.149.230:7078 with 1 core(s), 512.0 MiB RAM
+26/06/28 06:06:00 INFO StandaloneAppClient$ClientEndpoint: Executor updated: app-20260628060600-0015/2 is now RUNNING
+26/06/28 06:06:00 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 33971.
+26/06/28 06:06:00 INFO NettyBlockTransferService: Server created on Master001:33971
+26/06/28 06:06:00 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy
+26/06/28 06:06:00 INFO BlockManager: external shuffle service port = 7337
+26/06/28 06:06:00 INFO StandaloneAppClient$ClientEndpoint: Executor updated: app-20260628060600-0015/0 is now RUNNING
+26/06/28 06:06:00 INFO StandaloneAppClient$ClientEndpoint: Executor updated: app-20260628060600-0015/1 is now RUNNING
+26/06/28 06:06:00 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(driver, Master001, 33971, None)
+26/06/28 06:06:00 INFO BlockManagerMasterEndpoint: Registering block manager Master001:33971 with 413.9 MiB RAM, BlockManagerId(driver, Master001, 33971, None)
+26/06/28 06:06:00 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(driver, Master001, 33971, None)
+26/06/28 06:06:00 INFO BlockManager: Initialized BlockManager: BlockManagerId(driver, Master001, 33971, None)
+26/06/28 06:06:01 INFO StandaloneSchedulerBackend: SchedulerBackend is ready for scheduling beginning after reached minRegisteredResourcesRatio: 0.0
+2026-06-28 06:06:03,395 - INFO - ============================================================
+2026-06-28 06:06:03,395 - INFO - 全链路分布式 — 事件级故障间隔预测
+2026-06-28 06:06:03,395 - INFO - 集群: 3Worker×4核=12核, 数据分区=24
+2026-06-28 06:06:03,395 - INFO - ============================================================
+2026-06-28 06:06:03,396 - INFO - Phase 1: 读取Task2建模数据集
+2026-06-28 06:06:03,603 - INFO -   样本: 13339 | 特征: 13 (原版13维)
+2026-06-28 06:06:03,604 - INFO - Phase 2: 按设备划分 + 标准化
+2026-06-28 06:06:03,658 - INFO -   训练: 10545 | 测试: 2794 | 特征: 13
+2026-06-28 06:06:03,659 - INFO - ============================================================
+2026-06-28 06:06:03,659 - INFO - Phase 3: Stage 1 — 分布式scout RF → 特征重要性
+26/06/28 06:06:04 INFO MemoryStore: Block broadcast_0 stored as values in memory (estimated size 336.0 B, free 413.9 MiB)
+26/06/28 06:06:04 INFO MemoryStore: Block broadcast_0_piece0 stored as bytes in memory (estimated size 527.9 KiB, free 413.4 MiB)
+26/06/28 06:06:04 INFO BlockManagerInfo: Added broadcast_0_piece0 in memory on Master001:33971 (size: 527.9 KiB, free: 413.4 MiB)
+26/06/28 06:06:04 INFO SparkContext: Created broadcast 0 from broadcast at NativeMethodAccessorImpl.java:0
+26/06/28 06:06:04 INFO MemoryStore: Block broadcast_1 stored as values in memory (estimated size 336.0 B, free 413.4 MiB)
+26/06/28 06:06:04 INFO MemoryStore: Block broadcast_1_piece0 stored as bytes in memory (estimated size 83.2 KiB, free 413.3 MiB)
+26/06/28 06:06:04 INFO BlockManagerInfo: Added broadcast_1_piece0 in memory on Master001:33971 (size: 83.2 KiB, free: 413.3 MiB)
+26/06/28 06:06:04 INFO SparkContext: Created broadcast 1 from broadcast at NativeMethodAccessorImpl.java:0
+26/06/28 06:06:05 INFO SparkContext: Starting job: collect at /root/task3_event_spark_full.py:298
+26/06/28 06:06:06 INFO DAGScheduler: Got job 0 (collect at /root/task3_event_spark_full.py:298) with 6 output partitions
+26/06/28 06:06:06 INFO DAGScheduler: Final stage: ResultStage 0 (collect at /root/task3_event_spark_full.py:298)
+26/06/28 06:06:06 INFO DAGScheduler: Parents of final stage: List()
+26/06/28 06:06:06 INFO DAGScheduler: Missing parents: List()
+26/06/28 06:06:06 INFO DAGScheduler: Submitting ResultStage 0 (PythonRDD[1] at collect at /root/task3_event_spark_full.py:298), which has no missing parents
+26/06/28 06:06:06 INFO MemoryStore: Block broadcast_2 stored as values in memory (estimated size 8.9 KiB, free 413.3 MiB)
+26/06/28 06:06:06 INFO MemoryStore: Block broadcast_2_piece0 stored as bytes in memory (estimated size 6.0 KiB, free 413.3 MiB)
+26/06/28 06:06:06 INFO BlockManagerInfo: Added broadcast_2_piece0 in memory on Master001:33971 (size: 6.0 KiB, free: 413.3 MiB)
+26/06/28 06:06:06 INFO SparkContext: Created broadcast 2 from broadcast at DAGScheduler.scala:1611
+26/06/28 06:06:06 INFO DAGScheduler: Submitting 6 missing tasks from ResultStage 0 (PythonRDD[1] at collect at /root/task3_event_spark_full.py:298) (first 15 tasks are for partitions Vector(0, 1, 2, 3, 4, 5))
+26/06/28 06:06:06 INFO TaskSchedulerImpl: Adding task set 0.0 with 6 tasks resource profile 0
+26/06/28 06:06:06 INFO StandaloneSchedulerBackend$StandaloneDriverEndpoint: Registered executor NettyRpcEndpointRef(spark-client://Executor) (192.168.149.229:53046) with ID 0,  ResourceProfileId 0
+26/06/28 06:06:06 INFO StandaloneSchedulerBackend$StandaloneDriverEndpoint: Registered executor NettyRpcEndpointRef(spark-client://Executor) (192.168.149.230:39468) with ID 2,  ResourceProfileId 0
+26/06/28 06:06:06 INFO StandaloneSchedulerBackend$StandaloneDriverEndpoint: Registered executor NettyRpcEndpointRef(spark-client://Executor) (192.168.149.228:48310) with ID 1,  ResourceProfileId 0
+26/06/28 06:06:06 INFO BlockManagerMasterEndpoint: Registering block manager 192.168.149.229:36974 with 117.0 MiB RAM, BlockManagerId(0, 192.168.149.229, 36974, None)
+26/06/28 06:06:06 INFO BlockManagerMasterEndpoint: Registering block manager 192.168.149.228:39617 with 117.0 MiB RAM, BlockManagerId(1, 192.168.149.228, 39617, None)
+26/06/28 06:06:06 INFO BlockManagerMasterEndpoint: Registering block manager 192.168.149.230:33773 with 117.0 MiB RAM, BlockManagerId(2, 192.168.149.230, 33773, None)
+26/06/28 06:06:06 INFO TaskSetManager: Starting task 0.0 in stage 0.0 (TID 0) (192.168.149.229, executor 0, partition 0, PROCESS_LOCAL, 9064 bytes) 
+26/06/28 06:06:06 INFO TaskSetManager: Starting task 1.0 in stage 0.0 (TID 1) (192.168.149.230, executor 2, partition 1, PROCESS_LOCAL, 9064 bytes) 
+26/06/28 06:06:06 INFO TaskSetManager: Starting task 2.0 in stage 0.0 (TID 2) (192.168.149.228, executor 1, partition 2, PROCESS_LOCAL, 9064 bytes) 
+26/06/28 06:06:07 INFO BlockManagerInfo: Added broadcast_2_piece0 in memory on 192.168.149.228:39617 (size: 6.0 KiB, free: 117.0 MiB)
+26/06/28 06:06:07 INFO BlockManagerInfo: Added broadcast_2_piece0 in memory on 192.168.149.229:36974 (size: 6.0 KiB, free: 117.0 MiB)
+26/06/28 06:06:07 INFO BlockManagerInfo: Added broadcast_2_piece0 in memory on 192.168.149.230:33773 (size: 6.0 KiB, free: 117.0 MiB)
+26/06/28 06:06:09 INFO BlockManagerInfo: Added broadcast_1_piece0 in memory on 192.168.149.228:39617 (size: 83.2 KiB, free: 116.9 MiB)
+26/06/28 06:06:09 INFO BlockManagerInfo: Added broadcast_1_piece0 in memory on 192.168.149.230:33773 (size: 83.2 KiB, free: 116.9 MiB)
+26/06/28 06:06:09 INFO BlockManagerInfo: Added broadcast_1_python on disk on 192.168.149.228:39617 (size: 82.5 KiB)
+26/06/28 06:06:09 INFO BlockManagerInfo: Added broadcast_0_piece0 in memory on 192.168.149.228:39617 (size: 527.9 KiB, free: 116.4 MiB)
+26/06/28 06:06:09 INFO BlockManagerInfo: Added broadcast_0_python on disk on 192.168.149.228:39617 (size: 1071.1 KiB)
+26/06/28 06:06:09 INFO BlockManagerInfo: Added broadcast_1_python on disk on 192.168.149.230:33773 (size: 82.5 KiB)
+26/06/28 06:06:09 INFO BlockManagerInfo: Added broadcast_1_piece0 in memory on 192.168.149.229:36974 (size: 83.2 KiB, free: 116.9 MiB)
+26/06/28 06:06:10 INFO BlockManagerInfo: Added broadcast_1_python on disk on 192.168.149.229:36974 (size: 82.5 KiB)
+26/06/28 06:06:10 INFO BlockManagerInfo: Added broadcast_0_piece0 in memory on 192.168.149.230:33773 (size: 527.9 KiB, free: 116.4 MiB)
+26/06/28 06:06:10 INFO BlockManagerInfo: Added broadcast_0_python on disk on 192.168.149.230:33773 (size: 1071.1 KiB)
+26/06/28 06:06:10 INFO BlockManagerInfo: Added broadcast_0_piece0 in memory on 192.168.149.229:36974 (size: 527.9 KiB, free: 116.4 MiB)
+26/06/28 06:06:10 INFO BlockManagerInfo: Added broadcast_0_python on disk on 192.168.149.229:36974 (size: 1071.1 KiB)
+26/06/28 06:06:31 INFO TaskSetManager: Starting task 3.0 in stage 0.0 (TID 3) (192.168.149.230, executor 2, partition 3, PROCESS_LOCAL, 9064 bytes) 
+26/06/28 06:06:31 INFO TaskSetManager: Finished task 1.0 in stage 0.0 (TID 1) in 24790 ms on 192.168.149.230 (executor 2) (1/6)
+26/06/28 06:06:31 INFO PythonAccumulatorV2: Connected to AccumulatorServer at host: 127.0.0.1 port: 39099
+26/06/28 06:06:33 INFO TaskSetManager: Starting task 4.0 in stage 0.0 (TID 4) (192.168.149.229, executor 0, partition 4, PROCESS_LOCAL, 9064 bytes) 
+26/06/28 06:06:33 INFO TaskSetManager: Finished task 0.0 in stage 0.0 (TID 0) in 26342 ms on 192.168.149.229 (executor 0) (2/6)
+26/06/28 06:06:38 INFO TaskSetManager: Starting task 5.0 in stage 0.0 (TID 5) (192.168.149.228, executor 1, partition 5, PROCESS_LOCAL, 9064 bytes) 
+26/06/28 06:06:38 INFO TaskSetManager: Finished task 2.0 in stage 0.0 (TID 2) in 31151 ms on 192.168.149.228 (executor 1) (3/6)
+26/06/28 06:06:53 INFO TaskSetManager: Finished task 3.0 in stage 0.0 (TID 3) in 22156 ms on 192.168.149.230 (executor 2) (4/6)
+26/06/28 06:06:54 INFO TaskSetManager: Finished task 4.0 in stage 0.0 (TID 4) in 21508 ms on 192.168.149.229 (executor 0) (5/6)
+26/06/28 06:06:59 INFO TaskSetManager: Finished task 5.0 in stage 0.0 (TID 5) in 21512 ms on 192.168.149.228 (executor 1) (6/6)
+26/06/28 06:06:59 INFO TaskSchedulerImpl: Removed TaskSet 0.0, whose tasks have all completed, from pool 
+26/06/28 06:06:59 INFO DAGScheduler: ResultStage 0 (collect at /root/task3_event_spark_full.py:298) finished in 53.408 s
+26/06/28 06:06:59 INFO DAGScheduler: Job 0 is finished. Cancelling potential speculative or zombie tasks for this job
+26/06/28 06:06:59 INFO TaskSchedulerImpl: Killing all running tasks in stage 0: Stage finished
+26/06/28 06:06:59 INFO DAGScheduler: Job 0 finished: collect at /root/task3_event_spark_full.py:298, took 53.705553 s
+2026-06-28 06:06:59,765 - INFO -   Scout: 55s | Top10: ['上次间隔_小时', '运行天数', '平均间隔_小时', '响应时间_小时', '故障频率_次每天', '车站编码', '维修时长_小时', '故障小时', '历史次数', '故障月份']
+26/06/28 06:06:59 INFO TorrentBroadcast: Destroying Broadcast(0) (from destroy at NativeMethodAccessorImpl.java:0)
+26/06/28 06:06:59 INFO TorrentBroadcast: Destroying Broadcast(1) (from destroy at NativeMethodAccessorImpl.java:0)
+26/06/28 06:06:59 INFO BlockManagerInfo: Removed broadcast_0_piece0 on 192.168.149.230:33773 in memory (size: 527.9 KiB, free: 116.9 MiB)
+26/06/28 06:06:59 INFO BlockManagerInfo: Removed broadcast_0_piece0 on 192.168.149.228:39617 in memory (size: 527.9 KiB, free: 116.9 MiB)
+26/06/28 06:06:59 INFO BlockManagerInfo: Removed broadcast_0_piece0 on 192.168.149.229:36974 in memory (size: 527.9 KiB, free: 116.9 MiB)
+2026-06-28 06:06:59,873 - INFO - Phase 4: Stage 2 — 分布式主RF → Top10特征
+26/06/28 06:06:59 INFO MemoryStore: Block broadcast_3 stored as values in memory (estimated size 336.0 B, free 413.3 MiB)
+26/06/28 06:06:59 INFO BlockManagerInfo: Removed broadcast_0_piece0 on Master001:33971 in memory (size: 527.9 KiB, free: 413.8 MiB)
+26/06/28 06:06:59 INFO BlockManagerInfo: Removed broadcast_1_python on 192.168.149.229:36974 on disk (size: 82.5 KiB)
+26/06/28 06:06:59 INFO BlockManagerInfo: Removed broadcast_0_python on 192.168.149.229:36974 on disk (size: 1071.1 KiB)
+26/06/28 06:06:59 INFO BlockManagerInfo: Removed broadcast_0_python on 192.168.149.230:33773 on disk (size: 1071.1 KiB)
+26/06/28 06:06:59 INFO BlockManagerInfo: Removed broadcast_1_python on 192.168.149.230:33773 on disk (size: 82.5 KiB)
+26/06/28 06:06:59 INFO BlockManagerInfo: Removed broadcast_1_python on 192.168.149.228:39617 on disk (size: 82.5 KiB)
+26/06/28 06:06:59 INFO BlockManagerInfo: Removed broadcast_0_python on 192.168.149.228:39617 on disk (size: 1071.1 KiB)
+26/06/28 06:06:59 INFO MemoryStore: Block broadcast_3_piece0 stored as bytes in memory (estimated size 564.2 KiB, free 413.3 MiB)
+26/06/28 06:06:59 INFO BlockManagerInfo: Added broadcast_3_piece0 in memory on Master001:33971 (size: 564.2 KiB, free: 413.3 MiB)
+26/06/28 06:06:59 INFO BlockManagerInfo: Removed broadcast_1_piece0 on 192.168.149.229:36974 in memory (size: 83.2 KiB, free: 117.0 MiB)
+26/06/28 06:06:59 INFO SparkContext: Created broadcast 3 from broadcast at NativeMethodAccessorImpl.java:0
+26/06/28 06:06:59 INFO MemoryStore: Block broadcast_4 stored as values in memory (estimated size 336.0 B, free 413.3 MiB)
+26/06/28 06:07:00 INFO BlockManagerInfo: Removed broadcast_1_piece0 on 192.168.149.230:33773 in memory (size: 83.2 KiB, free: 117.0 MiB)
+26/06/28 06:07:00 INFO BlockManagerInfo: Removed broadcast_1_piece0 on 192.168.149.228:39617 in memory (size: 83.2 KiB, free: 117.0 MiB)
+26/06/28 06:07:00 INFO MemoryStore: Block broadcast_4_piece0 stored as bytes in memory (estimated size 83.2 KiB, free 413.2 MiB)
+26/06/28 06:07:00 INFO BlockManagerInfo: Added broadcast_4_piece0 in memory on Master001:33971 (size: 83.2 KiB, free: 413.2 MiB)
+26/06/28 06:07:00 INFO BlockManagerInfo: Removed broadcast_1_piece0 on Master001:33971 in memory (size: 83.2 KiB, free: 413.3 MiB)
+26/06/28 06:07:00 INFO SparkContext: Created broadcast 4 from broadcast at NativeMethodAccessorImpl.java:0
+26/06/28 06:07:00 INFO SparkContext: Starting job: collect at /root/task3_event_spark_full.py:331
+26/06/28 06:07:00 INFO DAGScheduler: Got job 1 (collect at /root/task3_event_spark_full.py:331) with 6 output partitions
+26/06/28 06:07:00 INFO DAGScheduler: Final stage: ResultStage 1 (collect at /root/task3_event_spark_full.py:331)
+26/06/28 06:07:00 INFO DAGScheduler: Parents of final stage: List()
+26/06/28 06:07:00 INFO DAGScheduler: Missing parents: List()
+26/06/28 06:07:00 INFO DAGScheduler: Submitting ResultStage 1 (PythonRDD[3] at collect at /root/task3_event_spark_full.py:331), which has no missing parents
+26/06/28 06:07:00 INFO MemoryStore: Block broadcast_5 stored as values in memory (estimated size 9.0 KiB, free 413.3 MiB)
+26/06/28 06:07:00 INFO MemoryStore: Block broadcast_5_piece0 stored as bytes in memory (estimated size 6.0 KiB, free 413.3 MiB)
+26/06/28 06:07:00 INFO BlockManagerInfo: Added broadcast_5_piece0 in memory on Master001:33971 (size: 6.0 KiB, free: 413.3 MiB)
+26/06/28 06:07:00 INFO SparkContext: Created broadcast 5 from broadcast at DAGScheduler.scala:1611
+26/06/28 06:07:00 INFO DAGScheduler: Submitting 6 missing tasks from ResultStage 1 (PythonRDD[3] at collect at /root/task3_event_spark_full.py:331) (first 15 tasks are for partitions Vector(0, 1, 2, 3, 4, 5))
+26/06/28 06:07:00 INFO TaskSchedulerImpl: Adding task set 1.0 with 6 tasks resource profile 0
+26/06/28 06:07:00 INFO TaskSetManager: Starting task 0.0 in stage 1.0 (TID 6) (192.168.149.230, executor 2, partition 0, PROCESS_LOCAL, 9069 bytes) 
+26/06/28 06:07:00 INFO TaskSetManager: Starting task 1.0 in stage 1.0 (TID 7) (192.168.149.228, executor 1, partition 1, PROCESS_LOCAL, 9069 bytes) 
+26/06/28 06:07:00 INFO TaskSetManager: Starting task 2.0 in stage 1.0 (TID 8) (192.168.149.229, executor 0, partition 2, PROCESS_LOCAL, 9069 bytes) 
+26/06/28 06:07:00 INFO BlockManagerInfo: Added broadcast_5_piece0 in memory on 192.168.149.228:39617 (size: 6.0 KiB, free: 117.0 MiB)
+26/06/28 06:07:00 INFO BlockManagerInfo: Added broadcast_5_piece0 in memory on 192.168.149.230:33773 (size: 6.0 KiB, free: 117.0 MiB)
+26/06/28 06:07:00 INFO BlockManagerInfo: Added broadcast_5_piece0 in memory on 192.168.149.229:36974 (size: 6.0 KiB, free: 117.0 MiB)
+26/06/28 06:07:00 INFO BlockManagerInfo: Added broadcast_3_piece0 in memory on 192.168.149.228:39617 (size: 564.2 KiB, free: 116.4 MiB)
+26/06/28 06:07:00 INFO BlockManagerInfo: Added broadcast_3_python on disk on 192.168.149.228:39617 (size: 824.0 KiB)
+26/06/28 06:07:00 INFO BlockManagerInfo: Added broadcast_3_piece0 in memory on 192.168.149.230:33773 (size: 564.2 KiB, free: 116.4 MiB)
+26/06/28 06:07:00 INFO BlockManagerInfo: Added broadcast_3_python on disk on 192.168.149.230:33773 (size: 824.0 KiB)
+26/06/28 06:07:00 INFO BlockManagerInfo: Added broadcast_3_piece0 in memory on 192.168.149.229:36974 (size: 564.2 KiB, free: 116.4 MiB)
+26/06/28 06:07:00 INFO BlockManagerInfo: Added broadcast_3_python on disk on 192.168.149.229:36974 (size: 824.0 KiB)
+26/06/28 06:07:00 INFO BlockManagerInfo: Added broadcast_4_piece0 in memory on 192.168.149.228:39617 (size: 83.2 KiB, free: 116.3 MiB)
+26/06/28 06:07:00 INFO BlockManagerInfo: Added broadcast_4_piece0 in memory on 192.168.149.230:33773 (size: 83.2 KiB, free: 116.3 MiB)
+26/06/28 06:07:00 INFO BlockManagerInfo: Added broadcast_4_python on disk on 192.168.149.228:39617 (size: 82.5 KiB)
+26/06/28 06:07:00 INFO BlockManagerInfo: Added broadcast_4_piece0 in memory on 192.168.149.229:36974 (size: 83.2 KiB, free: 116.3 MiB)
+26/06/28 06:07:00 INFO BlockManagerInfo: Added broadcast_4_python on disk on 192.168.149.230:33773 (size: 82.5 KiB)
+26/06/28 06:07:00 INFO BlockManagerInfo: Added broadcast_4_python on disk on 192.168.149.229:36974 (size: 82.5 KiB)
+26/06/28 06:07:48 INFO TaskSetManager: Starting task 3.0 in stage 1.0 (TID 9) (192.168.149.228, executor 1, partition 3, PROCESS_LOCAL, 9069 bytes) 
+26/06/28 06:07:48 INFO TaskSetManager: Finished task 1.0 in stage 1.0 (TID 7) in 47743 ms on 192.168.149.228 (executor 1) (1/6)
+26/06/28 06:07:48 INFO TaskSetManager: Starting task 4.0 in stage 1.0 (TID 10) (192.168.149.230, executor 2, partition 4, PROCESS_LOCAL, 9069 bytes) 
+26/06/28 06:07:48 INFO TaskSetManager: Finished task 0.0 in stage 1.0 (TID 6) in 48615 ms on 192.168.149.230 (executor 2) (2/6)
+26/06/28 06:07:54 INFO TaskSetManager: Starting task 5.0 in stage 1.0 (TID 11) (192.168.149.229, executor 0, partition 5, PROCESS_LOCAL, 9069 bytes) 
+26/06/28 06:07:54 INFO TaskSetManager: Finished task 2.0 in stage 1.0 (TID 8) in 54440 ms on 192.168.149.229 (executor 0) (3/6)
+26/06/28 06:08:39 INFO TaskSetManager: Finished task 3.0 in stage 1.0 (TID 9) in 51071 ms on 192.168.149.228 (executor 1) (4/6)
+26/06/28 06:08:41 INFO TaskSetManager: Finished task 4.0 in stage 1.0 (TID 10) in 52837 ms on 192.168.149.230 (executor 2) (5/6)
+26/06/28 06:08:46 INFO TaskSetManager: Finished task 5.0 in stage 1.0 (TID 11) in 51774 ms on 192.168.149.229 (executor 0) (6/6)
+26/06/28 06:08:46 INFO TaskSchedulerImpl: Removed TaskSet 1.0, whose tasks have all completed, from pool 
+26/06/28 06:08:46 INFO DAGScheduler: ResultStage 1 (collect at /root/task3_event_spark_full.py:331) finished in 106.238 s
+26/06/28 06:08:46 INFO DAGScheduler: Job 1 is finished. Cancelling potential speculative or zombie tasks for this job
+26/06/28 06:08:46 INFO TaskSchedulerImpl: Killing all running tasks in stage 1: Stage finished
+26/06/28 06:08:46 INFO DAGScheduler: Job 1 finished: collect at /root/task3_event_spark_full.py:331, took 106.292443 s
+2026-06-28 06:09:00,134 - INFO -   主RF: 107s (30棵树)
+2026-06-28 06:09:00,134 - INFO -   DIAG-广播数据一致性: OK (X_bc2.value vs X_tr_top)
+2026-06-28 06:09:00,134 - INFO -   DIAG-Driver树 vs Worker树 r=0.1298 (不同seed, 预期0.3~0.7)
+2026-06-28 06:09:00,135 - INFO -   DIAG-Driver树预测: [6.5, 4.6, 7.8, 6.5, 4.5]
+2026-06-28 06:09:00,135 - INFO -   DIAG-Worker树预测: [8.2, 3.7, 4.8, 5.9, 6.2]
+26/06/28 06:09:00 INFO TorrentBroadcast: Destroying Broadcast(3) (from destroy at NativeMethodAccessorImpl.java:0)
+26/06/28 06:09:00 INFO TorrentBroadcast: Destroying Broadcast(4) (from destroy at NativeMethodAccessorImpl.java:0)
+2026-06-28 06:09:00,156 - INFO - Phase 5: Driver — 集成预测 + 评估
+26/06/28 06:09:00 INFO BlockManagerInfo: Removed broadcast_3_python on 192.168.149.229:36974 on disk (size: 824.0 KiB)
+26/06/28 06:09:00 INFO BlockManagerInfo: Removed broadcast_4_piece0 on 192.168.149.229:36974 in memory (size: 83.2 KiB, free: 116.4 MiB)
+26/06/28 06:09:00 INFO BlockManagerInfo: Removed broadcast_3_python on 192.168.149.228:39617 on disk (size: 824.0 KiB)
+26/06/28 06:09:00 INFO BlockManagerInfo: Removed broadcast_4_piece0 on 192.168.149.228:39617 in memory (size: 83.2 KiB, free: 116.4 MiB)
+26/06/28 06:09:00 INFO BlockManagerInfo: Removed broadcast_3_python on 192.168.149.230:33773 on disk (size: 824.0 KiB)
+26/06/28 06:09:00 INFO BlockManagerInfo: Removed broadcast_4_piece0 on 192.168.149.230:33773 in memory (size: 83.2 KiB, free: 116.4 MiB)
+26/06/28 06:09:00 INFO BlockManagerInfo: Removed broadcast_3_piece0 on 192.168.149.229:36974 in memory (size: 564.2 KiB, free: 117.0 MiB)
+26/06/28 06:09:00 INFO BlockManagerInfo: Removed broadcast_4_python on 192.168.149.229:36974 on disk (size: 82.5 KiB)
+26/06/28 06:09:00 INFO BlockManagerInfo: Removed broadcast_4_python on 192.168.149.228:39617 on disk (size: 82.5 KiB)
+26/06/28 06:09:00 INFO BlockManagerInfo: Removed broadcast_3_piece0 on 192.168.149.228:39617 in memory (size: 564.2 KiB, free: 117.0 MiB)
+26/06/28 06:09:00 INFO BlockManagerInfo: Removed broadcast_3_piece0 on 192.168.149.230:33773 in memory (size: 564.2 KiB, free: 117.0 MiB)
+26/06/28 06:09:00 INFO BlockManagerInfo: Removed broadcast_4_python on 192.168.149.230:33773 on disk (size: 82.5 KiB)
+26/06/28 06:09:00 INFO BlockManagerInfo: Removed broadcast_3_piece0 on Master001:33971 in memory (size: 564.2 KiB, free: 413.8 MiB)
+26/06/28 06:09:00 INFO BlockManagerInfo: Removed broadcast_4_piece0 on Master001:33971 in memory (size: 83.2 KiB, free: 413.9 MiB)
+2026-06-28 06:09:02,093 - INFO - 模型已保存: /root/event_numpy_rf_full.pkl
 
 ======================================================================
 全链路分布式numpy RF — 事件级故障间隔预测
@@ -219,8 +216,8 @@
   数据分区: 24 (Hash分桶 → Shuffle → SortMerge)
   分布式阶段: 数据切分/Shuffle/聚合/特征工程/树训练
   特征工程: 使用Task2输出 (modeling_dataset_event.csv)
-  Scout RF: 54秒 (30树)
-  主RF:     109秒 (30树)
+  Scout RF: 55秒 (30树)
+  主RF:     107秒 (30树)
   ───────────────────────────────────────
   MAE:     680.3h (28.3天)
   RMSE:    1138.9h (47.5天)
@@ -229,19 +226,19 @@
   R²:      -0.198
   ───────────────────────────────────────
   ✗ <65%
-26/06/28 06:03:54 INFO SparkContext: SparkContext is stopping with exitCode 0.
-26/06/28 06:03:54 INFO SparkUI: Stopped Spark web UI at http://Master001:4040
-26/06/28 06:03:54 INFO StandaloneSchedulerBackend: Shutting down all executors
-26/06/28 06:03:54 INFO StandaloneSchedulerBackend$StandaloneDriverEndpoint: Asking each executor to shut down
-26/06/28 06:03:54 INFO MapOutputTrackerMasterEndpoint: MapOutputTrackerMasterEndpoint stopped!
-26/06/28 06:03:54 INFO MemoryStore: MemoryStore cleared
-26/06/28 06:03:54 INFO BlockManager: BlockManager stopped
-26/06/28 06:03:55 INFO BlockManagerMaster: BlockManagerMaster stopped
-26/06/28 06:03:55 INFO OutputCommitCoordinator$OutputCommitCoordinatorEndpoint: OutputCommitCoordinator stopped!
-26/06/28 06:03:55 INFO SparkContext: Successfully stopped SparkContext
+26/06/28 06:09:02 INFO SparkContext: SparkContext is stopping with exitCode 0.
+26/06/28 06:09:02 INFO SparkUI: Stopped Spark web UI at http://Master001:4040
+26/06/28 06:09:02 INFO StandaloneSchedulerBackend: Shutting down all executors
+26/06/28 06:09:02 INFO StandaloneSchedulerBackend$StandaloneDriverEndpoint: Asking each executor to shut down
+26/06/28 06:09:02 INFO MapOutputTrackerMasterEndpoint: MapOutputTrackerMasterEndpoint stopped!
+26/06/28 06:09:02 INFO MemoryStore: MemoryStore cleared
+26/06/28 06:09:02 INFO BlockManager: BlockManager stopped
+26/06/28 06:09:02 INFO BlockManagerMaster: BlockManagerMaster stopped
+26/06/28 06:09:02 INFO OutputCommitCoordinator$OutputCommitCoordinatorEndpoint: OutputCommitCoordinator stopped!
+26/06/28 06:09:02 INFO SparkContext: Successfully stopped SparkContext
 
 完成!
-26/06/28 06:03:56 INFO ShutdownHookManager: Shutdown hook called
-26/06/28 06:03:56 INFO ShutdownHookManager: Deleting directory /tmp/spark-tmp/spark-24969b00-a643-4a6a-9f6d-6ea3c9e8dd97
-26/06/28 06:03:56 INFO ShutdownHookManager: Deleting directory /tmp/spark-797961e8-1af7-4fa4-9f45-f1b9d9dd2bbd
-26/06/28 06:03:56 INFO ShutdownHookManager: Deleting directory /tmp/spark-tmp/spark-24969b00-a643-4a6a-9f6d-6ea3c9e8dd97/pyspark-fb832a43-e276-460e-bfa2-c566ec5b0036
+26/06/28 06:09:03 INFO ShutdownHookManager: Shutdown hook called
+26/06/28 06:09:03 INFO ShutdownHookManager: Deleting directory /tmp/spark-tmp/spark-ed635723-c2fd-4341-afdc-3e9b3dcd38d2/pyspark-a2927882-be07-40a3-8353-ad2af6f62242
+26/06/28 06:09:03 INFO ShutdownHookManager: Deleting directory /tmp/spark-4d752054-7a53-4808-959a-130084b39afd
+26/06/28 06:09:03 INFO ShutdownHookManager: Deleting directory /tmp/spark-tmp/spark-ed635723-c2fd-4341-afdc-3e9b3dcd38d2

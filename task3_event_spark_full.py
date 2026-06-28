@@ -332,26 +332,24 @@ if __name__ == '__main__':
                        .mapPartitions(train_partition).collect())
     t_main = time.time() - t0
 
-    # ★ 诊断: 相同seed+相同Bootstrap, Driver vs Worker树对比
-    test_seed = 42
-    np.random.seed(test_seed)
-    test_idx = np.random.choice(len(y_tr_log), len(y_tr_log), replace=True)
-    # Driver树
-    np.random.seed(test_seed)
-    driver_tree = NumPyTree(18, 2)
-    driver_tree.fit(X_tr_top[test_idx], y_tr_log[test_idx])
-    driver_pred = driver_tree.predict(X_te_top[:100])
-    # 第0棵Worker树也用的seed=RANDOM_SEED+1000=1042, 不是test_seed.
-    # 直接取第0棵, 它用seed=1042的bootstrap
-    worker_pred = main_trees[0].predict(X_te_top[:100])
-    pred_corr = np.corrcoef(driver_pred, worker_pred)[0, 1]
-    # 关键: 检查X_bc2.value == X_tr_top?
-    bc_data_ok = np.allclose(X_bc2.value, X_tr_top)
+    # ★ 诊断: Driver直接训5棵树, 看NumPyTree本身是否正常
+    np.random.seed(42)
+    driver_trees = []
+    for i in range(5):
+        idx = np.random.choice(len(y_tr_log), len(y_tr_log), replace=True)
+        driver_trees.append(NumPyTree(18, 2).fit(X_tr_top[idx], y_tr_log[idx]))
+    driver_preds = np.column_stack([t.predict(X_te_top) for t in driver_trees])
+    driver_ens = np.expm1(driver_preds.mean(axis=1))
+    mask = y_te > 1
+    driver_mape = np.mean(np.abs((y_te[mask]-driver_ens[mask])/y_te[mask]))*100
+    # Worker集成
+    worker_preds = np.column_stack([t.predict(X_te_top) for t in main_trees])
+    worker_ens = np.expm1(worker_preds.mean(axis=1))
+    worker_mape = np.mean(np.abs((y_te[mask]-worker_ens[mask])/y_te[mask]))*100
     logger.info(f"  主RF: {t_main:.0f}s ({len(main_trees)}棵树)")
-    logger.info(f"  DIAG-广播数据一致性: {'OK' if bc_data_ok else 'CORRUPTED!'} (X_bc2.value vs X_tr_top)")
-    logger.info(f"  DIAG-Driver树 vs Worker树 r={pred_corr:.4f} (不同seed, 预期0.3~0.7)")
-    logger.info(f"  DIAG-Driver树预测: {[round(x,1) for x in driver_pred[:5]]}")
-    logger.info(f"  DIAG-Worker树预测: {[round(x,1) for x in worker_pred[:5]]}")
+    logger.info(f"  DIAG-Driver 5树集成 1-MAPE={100-driver_mape:.1f}%")
+    logger.info(f"  DIAG-Worker {len(main_trees)}树集成 1-MAPE={100-worker_mape:.1f}%")
+    logger.info(f"  {'>>> NumPyTree正常, Spark Worker有问题!' if 100-driver_mape > 30 else '>>> NumPyTree本身坏了!'}")
 
     X_bc2.destroy(); y_bc2.destroy()
 
